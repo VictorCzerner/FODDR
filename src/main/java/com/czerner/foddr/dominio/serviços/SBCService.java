@@ -3,6 +3,7 @@ package com.czerner.foddr.dominio.serviços;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.springframework.stereotype.Service;
 
@@ -15,7 +16,7 @@ import com.czerner.foddr.dominio.entidades.forragens;
 public class SBCService {
 
     private final elencoService elencoService;
-    private boolean encontrouSolucao;
+    private final AtomicBoolean encontrouSolucao = new AtomicBoolean(false);;
 
     public SBCService(elencoService elencoService) {
         this.elencoService = elencoService;
@@ -27,13 +28,19 @@ public class SBCService {
 
 
     public SBCResponse encontrarSolucao(SBC sbc, forragens jogadores) throws Exception {
-        encontrouSolucao = false;
+        encontrouSolucao.set(false);
 
         List<int[]> elencosCompletos = new ArrayList<>();
         List<int[]> elencosFaltantes = new ArrayList<>();
         int[] total = null;
 
-        
+        for (elenco e : sbc.getElencos()) {
+            List<int[]> novo = elencoService.SoluçõesPossiveis(e, jogadores);
+            int[][] tabela = novo.toArray(new int[0][]); // converte List<int[]> para int[][]
+            e.setTabela(tabela);
+            System.out.println(Arrays.toString(jogadores.getForragem()));
+            System.out.println(Arrays.deepToString(e.getTabela()));
+        }
 
         buscarRecursivo(sbc, jogadores, elencosCompletos, 0, elencosFaltantes);
 
@@ -49,90 +56,126 @@ public class SBCService {
         return new SBCResponse(elencosCompletos, total, elencosFaltantes);
     }
 
-    private void buscarRecursivo(SBC sbc, forragens jogadores, List<int[]> elencosCompletos,
-                                 int maxElencos, List<int[]> elencosFaltantes) throws Exception {
+    private void buscarRecursivo(SBC sbc, forragens jogadores,
+                                 List<int[]> elencosCompletos, int maxElencos,
+                                 List<int[]> elencosFaltantes) throws Exception {
 
-        if (encontrouSolucao) return;
+        if (encontrouSolucao.get()) return;
+        System.out.println(jogadores);                            
 
         List<elenco> elencos = sbc.getElencos();
+        
+
+        if (elencos == null || elencos.isEmpty()) return;
         if (elencosCompletos.size() >= elencos.size()) return;
+        
+        forragens jogadoresOri;
+        int[] forragemAnterior = jogadores.getForragem();
+        for (int i = 0; i < forragemAnterior.length; i++) {
+            if (!elencosCompletos.isEmpty()){
+                forragemAnterior[i] += elencosCompletos.get(elencosCompletos.size()-1)[i];
+            }
+        }
+        jogadoresOri = new forragens(forragemAnterior);
+
+        
+        
 
         boolean encontrado = false;
         int[] jogadoresAtual = new int[jogadores.getForragem().length];
-
+       
+        
         int idx = elencosCompletos.size();
-        int[][] tabelaOriginal = elencos.get(idx).getTabela();
+        if (idx >= elencos.size()) return;
+        
+        int[][] tabelaAtual = elencos.get(idx).getTabela();
+        System.out.println(idx + " " + tabelaAtual.length + " " + elencosCompletos.size());
+        if (tabelaAtual != null || tabelaAtual.length != 0) {
+        
+            for (int i = 0; i < tabelaAtual.length; i++) {
+                
+                if (tabelaAtual[i] == null || tabelaAtual[i].length == 0) continue;
+                
 
-        // Cria cópia da tabela para “riscar” combinações testadas sem afetar o original
-        int[][] tabelaAtual = Arrays.stream(tabelaOriginal)
-                .map(linha -> linha != null ? linha.clone() : null)
-                .toArray(int[][]::new);
-
-        for (int i = 0; i < tabelaAtual.length; i++) {
-            if (tabelaAtual[i] != null) {
-                boolean positivo = true;
-
+                boolean possivel = true;
+                System.out.println(elencosCompletos.size() + "TENTANDO: " + Arrays.toString(tabelaAtual[i]));
                 for (int j = 0; j < jogadores.getForragem().length; j++) {
                     jogadoresAtual[j] = jogadores.getForragem()[j] - tabelaAtual[i][j];
                     if (jogadoresAtual[j] < 0) {
-                        positivo = false;
+                        possivel = false;
                         break;
                     }
                 }
 
-                if (positivo) {
+                if (possivel) {
+                    System.out.println(elencosCompletos.size() + "✓ Tentativa bem-sucedida: " + Arrays.toString(tabelaAtual[i]));
                     elencosCompletos.add(tabelaAtual[i]);
-                    maxElencos = Math.max(maxElencos, elencosCompletos.size());
+                    
+                    if (elencosCompletos.size() > maxElencos) {
+                        maxElencos = elencosCompletos.size();
+                    }
                     encontrado = true;
 
-                    // Riscagem local (mantém lógica original)
                     if (elencosCompletos.size() < elencos.size()) {
+
                         tabelaAtual[i] = null;
+
                     } else {
                         break;
                     }
 
-                    forragens att = new forragens(jogadoresAtual.clone());
-                    buscarRecursivo(sbc, att, elencosCompletos, maxElencos, elencosFaltantes);
-                    if (encontrouSolucao) return;
+                    forragens novaForragem = new forragens(jogadoresAtual);
+                    System.out.println("-----------------------");
+                    buscarRecursivo(sbc, novaForragem, elencosCompletos, maxElencos, elencosFaltantes);
 
-                    // Backtracking
-                    elencosCompletos.remove(elencosCompletos.size() - 1);
+                    if (encontrouSolucao.get()) return;
                 }
             }
         }
 
+        // backtracking
         if (!encontrado && !elencosCompletos.isEmpty()) {
             elencosCompletos.remove(elencosCompletos.size() - 1);
-            buscarRecursivo(sbc, jogadores, elencosCompletos, maxElencos, elencosFaltantes);
+            System.out.println("teste");
+            buscarRecursivo(sbc, jogadoresOri, elencosCompletos, maxElencos, elencosFaltantes);
             return;
         }
 
-        // Se não encontrou solução parcial, cria subSBC com parte dos elencos
-        if (!encontrado && elencosCompletos.isEmpty() && !encontrouSolucao) {
-            int[] divE = new int[maxElencos];
-            for (int i = 0; i < maxElencos; i++) divE[i] = elencos.get(i).getOVR();
+        // caso de subdivisão
+        if (!encontrado && elencosCompletos.isEmpty() && !encontrouSolucao.get()) {
 
-            SBC subSbc = new SBC(maxElencos, divE, elencoService);
-            SBCResponse sub = encontrarSolucao(subSbc, jogadores);
-
-            elencosCompletos.addAll(sub.getElencosCompletos());
-            if (sub.getTotal() != null) {
-                elencosFaltantes.addAll(sub.getElencosFaltantes());
-            }
-
-            // Adiciona elencos faltantes deste nível
             for (int i = maxElencos; i < elencos.size(); i++) {
-                elencosFaltantes.add(elencos.get(i).getTabela()[0]);
+                int[][] tabela = elencos.get(i).getTabela();
+                if (tabela != null && tabela.length > 0) {
+                    elencosFaltantes.add(tabela[0]);
+                }
             }
 
-            encontrouSolucao = true;
+            if (maxElencos != 0) { // evita recursão infinita com 1 elenco
+                int[] divideElencos = new int[maxElencos];
+                for (int i = 0; i < maxElencos; i++) {
+                    divideElencos[i] = elencos.get(i).getOVR();
+                }
+                SBC sbcDividido = new SBC(maxElencos, divideElencos, elencoService);
+
+                for (elenco e : sbcDividido.getElencos()) {
+                    List<int[]> novo = elencoService.SoluçõesPossiveis(e, jogadores);
+                    int[][] tabela = novo.toArray(new int[0][]); // converte List<int[]> para int[][]
+                    e.setTabela(tabela);
+                    System.out.println(Arrays.toString(jogadores.getForragem()));
+                    System.out.println(Arrays.deepToString(e.getTabela()));
+                }
+
+                buscarRecursivo(sbcDividido, jogadoresOri, elencosCompletos, maxElencos, elencosFaltantes);
+            }
+
+            encontrouSolucao.set(true);
             return;
         }
 
-        // Quando completa todos os elencos
         if (encontrado && (elencosCompletos.size() == sbc.getNumElencos())) {
-            encontrouSolucao = true;
+            encontrouSolucao.set(true);
         }
     }
 }
+

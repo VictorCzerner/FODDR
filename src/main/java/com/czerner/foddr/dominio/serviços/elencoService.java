@@ -33,23 +33,29 @@ public class elencoService {
         return elenco;
     }
 
-    public List<int[]>  SoluçõesPossiveis(elenco elenco, forragens forragens){
-        List<int[]> soluções = new ArrayList<>();
-        int[] jogadores = forragens.getForragem();
-        for(int[] s: elenco.getTabela()){
-            int count = 0;
-            for (int i = 0; i < s.length; i++) {
-                int ovr = s[i];
-                if (jogadores[i] >= ovr) {
-                    count++;
-                }
-            }
-            if (count == jogadores.length){
-                soluções.add(s);
+    public List<int[]> SoluçõesPossiveis(elenco elenco, forragens forragens) {
+    List<int[]> soluções = new ArrayList<>();
+    int[] jogadores = forragens.getForragem();
+
+    for (int[] s : elenco.getTabela()) {
+        if (s == null) continue; // <-- pula se s for nulo
+
+        int count = 0;
+        for (int i = 0; i < s.length; i++) {
+            int ovr = s[i];
+            if (jogadores[i] >= ovr) {
+                count++;
             }
         }
-        return soluções;
+
+        if (count == jogadores.length) {
+            soluções.add(s);
+        }
     }
+
+    return soluções;
+}
+
 
     public elenco AdicionaElenco(int ovr, int minRating, int maxRating) throws Exception {
         if (elencoRepository.buscaPorOvr(ovr) != null) {
