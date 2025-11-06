@@ -1,14 +1,15 @@
 package com.czerner.foddr.dominio.serviços;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import com.czerner.foddr.aplicação.Responses.SBCResponse;
 import com.czerner.foddr.dominio.entidades.SBC;
 import com.czerner.foddr.dominio.entidades.elenco;
 import com.czerner.foddr.dominio.entidades.forragens;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 @Service
 public class SBCService {
@@ -24,12 +25,15 @@ public class SBCService {
         return new SBC(numElencos, ovrs, elencoService);
     }
 
+
     public SBCResponse encontrarSolucao(SBC sbc, forragens jogadores) throws Exception {
         encontrouSolucao = false;
 
         List<int[]> elencosCompletos = new ArrayList<>();
         List<int[]> elencosFaltantes = new ArrayList<>();
         int[] total = null;
+
+        
 
         buscarRecursivo(sbc, jogadores, elencosCompletos, 0, elencosFaltantes);
 

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.czerner.foddr.dominio.dados.elencoRepository;
 import com.czerner.foddr.dominio.entidades.elenco;
+import com.czerner.foddr.dominio.entidades.forragens;
 
 @Service  
 public class elencoService {
@@ -30,6 +31,24 @@ public class elencoService {
         int[][] tabela = CalculaTabela(ovr, minRating, maxRating).stream().toArray(int[][]::new);
         elenco elenco = new elenco(ovr, tabela);
         return elenco;
+    }
+
+    public List<int[]>  SoluçõesPossiveis(elenco elenco, forragens forragens){
+        List<int[]> soluções = new ArrayList<>();
+        int[] jogadores = forragens.getForragem();
+        for(int[] s: elenco.getTabela()){
+            int count = 0;
+            for (int i = 0; i < s.length; i++) {
+                int ovr = s[i];
+                if (jogadores[i] >= ovr) {
+                    count++;
+                }
+            }
+            if (count == jogadores.length){
+                soluções.add(s);
+            }
+        }
+        return soluções;
     }
 
     public elenco AdicionaElenco(int ovr, int minRating, int maxRating) throws Exception {

@@ -1,5 +1,6 @@
 package com.czerner.foddr.adaptadores.apresentação;
 
+import com.czerner.foddr.adaptadores.apresentação.Requests.SBCRequest;
 import com.czerner.foddr.aplicação.Responses.SBCResponse;
 import com.czerner.foddr.dominio.entidades.SBC;
 import com.czerner.foddr.dominio.entidades.forragens;
@@ -7,6 +8,7 @@ import com.czerner.foddr.dominio.serviços.SBCService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/sbc")
 public class SBCController {
 
@@ -39,26 +41,4 @@ public class SBCController {
         }
     }
 
-    // DTO (estrutura do JSON de entrada)
-    public static class SBCRequest {
-        private SBCData sbc;
-        private int[] forragem;
-
-        public SBCData getSbc() { return sbc; }
-        public void setSbc(SBCData sbc) { this.sbc = sbc; }
-
-        public int[] getForragem() { return forragem; }
-        public void setForragem(int[] forragem) { this.forragem = forragem; }
-    }
-
-    public static class SBCData {
-        private int numElencos;
-        private int[] ovrs;
-
-        public int getNumElencos() { return numElencos; }
-        public void setNumElencos(int numElencos) { this.numElencos = numElencos; }
-
-        public int[] getOvrs() { return ovrs; }
-        public void setOvrs(int[] ovrs) { this.ovrs = ovrs; }
-    }
 }
