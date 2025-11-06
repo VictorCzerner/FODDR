@@ -83,7 +83,7 @@ form.addEventListener("submit", async (e) => {
   resultadoBox.textContent = "Carregando...";
 
   try {
-    const response = await fetch("http://localhost:8080/sbc/encontrar", {
+    const response = await fetch("https://neglected-haunting-x5q794p6w4qh9q95-8080.app.github.dev/sbc/encontrar", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data)

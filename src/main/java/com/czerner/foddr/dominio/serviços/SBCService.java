@@ -16,10 +16,12 @@ import com.czerner.foddr.dominio.entidades.forragens;
 public class SBCService {
 
     private final elencoService elencoService;
+    private final List<int[][]> restoreElenco;
     private final AtomicBoolean encontrouSolucao = new AtomicBoolean(false);;
 
     public SBCService(elencoService elencoService) {
         this.elencoService = elencoService;
+        this.restoreElenco = new ArrayList<>();
     }
 
     public SBC criaSBC(int numElencos, int[] ovrs) throws Exception {
@@ -38,6 +40,7 @@ public class SBCService {
             List<int[]> novo = elencoService.SoluçõesPossiveis(e, jogadores);
             int[][] tabela = novo.toArray(new int[0][]); // converte List<int[]> para int[][]
             e.setTabela(tabela);
+            restoreElenco.add(e.getTabela().clone());
             System.out.println(Arrays.toString(jogadores.getForragem()));
             System.out.println(Arrays.deepToString(e.getTabela()));
         }
@@ -78,7 +81,7 @@ public class SBCService {
         }
         jogadoresOri = new forragens(forragemAnterior);
 
-        
+        System.out.println("backup:"+ Arrays.deepToString(restoreElenco.get(1)));
         
 
         boolean encontrado = false;
@@ -117,7 +120,7 @@ public class SBCService {
                     encontrado = true;
 
                     if (elencosCompletos.size() < elencos.size()) {
-
+                        System.out.println("out");
                         tabelaAtual[i] = null;
 
                     } else {
@@ -136,7 +139,8 @@ public class SBCService {
         // backtracking
         if (!encontrado && !elencosCompletos.isEmpty()) {
             elencosCompletos.remove(elencosCompletos.size() - 1);
-            System.out.println("teste");
+            System.out.println(idx);
+            elencos.get(idx).setTabela(restoreElenco.get(idx).clone());
             buscarRecursivo(sbc, jogadoresOri, elencosCompletos, maxElencos, elencosFaltantes);
             return;
         }
