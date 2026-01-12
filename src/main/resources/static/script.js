@@ -675,7 +675,7 @@ form.addEventListener("submit", async (e) => {
   showResultPlaceholder("Buscando elencos...");
 
   try {
-    const response = await fetch(`http://foddr.onrender.com/sbc/encontrar`, {
+    const response = await fetch("https://foddr.onrender.com/sbc/encontrar", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data)
