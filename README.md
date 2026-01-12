@@ -49,7 +49,13 @@ src/main/java/com/czerner/foddr
   1. Entrada esperada:
      ```json
      {
-       "sbc": { "numElencos": 3, "ovrs": [84, 85, 86] },
+       "sbc": {
+         "elencos": [
+           { "ovr": 84, "informs": 0 },
+           { "ovr": 85, "informs": 1 },
+           { "ovr": 86, "informs": 0 }
+         ]
+       },
        "forragem": [2,1,0,3,4,5,1,0,0,0,0,0,0,0,0]
      }
      ```  

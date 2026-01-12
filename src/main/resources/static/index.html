@@ -23,21 +23,129 @@
           <div class="squad-config">
             <div class="squad-labels">
               <span>SQUADS:</span>
-              <span>N°:</span>
+              <div class="squad-count">
+                <span>N°:</span>
+                <input type="number" id="numElencos" class="pill-input" min="1" value="1" readonly>
+              </div>
             </div>
             <div class="squad-controls">
-              <input type="number" id="numElencos" class="pill-input" min="1" value="1">
               <div class="ovr-controls">
-                <div id="ovrContainer" class="ovr-container">
-                  <input type="number" class="ovr-input" min="60" max="99" value="84">
-                </div>
+                <div id="ovrContainer" class="ovr-container"></div>
                 <button type="button" id="addOvr" class="pill-button">+</button>
               </div>
             </div>
           </div>
 
           <div class="grid-wrapper">
+            <div class="grid-heading">
+              <div>
+                <h2>Forragem base</h2>
+                <p>Atualize a quantidade de cartas disponíveis em cada OVR.</p>
+              </div>
+            </div>
             <div class="rating-grid" id="ratingGrid">
+              <div class="rating-col" data-rating="79">
+                <div class="cell cell-rating">79</div>
+                <button type="button" class="cell cell-plus" data-action="plus">+</button>
+                <div class="cell cell-value">0</div>
+                <button type="button" class="cell cell-minus" data-action="minus">-</button>
+              </div>
+              <div class="rating-col" data-rating="80">
+                <div class="cell cell-rating">80</div>
+                <button type="button" class="cell cell-plus" data-action="plus">+</button>
+                <div class="cell cell-value">0</div>
+                <button type="button" class="cell cell-minus" data-action="minus">-</button>
+              </div>
+              <div class="rating-col" data-rating="81">
+                <div class="cell cell-rating">81</div>
+                <button type="button" class="cell cell-plus" data-action="plus">+</button>
+                <div class="cell cell-value">0</div>
+                <button type="button" class="cell cell-minus" data-action="minus">-</button>
+              </div>
+              <div class="rating-col" data-rating="82">
+                <div class="cell cell-rating">82</div>
+                <button type="button" class="cell cell-plus" data-action="plus">+</button>
+                <div class="cell cell-value">0</div>
+                <button type="button" class="cell cell-minus" data-action="minus">-</button>
+              </div>
+              <div class="rating-col" data-rating="83">
+                <div class="cell cell-rating">83</div>
+                <button type="button" class="cell cell-plus" data-action="plus">+</button>
+                <div class="cell cell-value">0</div>
+                <button type="button" class="cell cell-minus" data-action="minus">-</button>
+              </div>
+              <div class="rating-col" data-rating="84">
+                <div class="cell cell-rating">84</div>
+                <button type="button" class="cell cell-plus" data-action="plus">+</button>
+                <div class="cell cell-value">0</div>
+                <button type="button" class="cell cell-minus" data-action="minus">-</button>
+              </div>
+              <div class="rating-col" data-rating="85">
+                <div class="cell cell-rating">85</div>
+                <button type="button" class="cell cell-plus" data-action="plus">+</button>
+                <div class="cell cell-value">0</div>
+                <button type="button" class="cell cell-minus" data-action="minus">-</button>
+              </div>
+              <div class="rating-col" data-rating="86">
+                <div class="cell cell-rating">86</div>
+                <button type="button" class="cell cell-plus" data-action="plus">+</button>
+                <div class="cell cell-value">0</div>
+                <button type="button" class="cell cell-minus" data-action="minus">-</button>
+              </div>
+              <div class="rating-col" data-rating="87">
+                <div class="cell cell-rating">87</div>
+                <button type="button" class="cell cell-plus" data-action="plus">+</button>
+                <div class="cell cell-value">0</div>
+                <button type="button" class="cell cell-minus" data-action="minus">-</button>
+              </div>
+              <div class="rating-col" data-rating="88">
+                <div class="cell cell-rating">88</div>
+                <button type="button" class="cell cell-plus" data-action="plus">+</button>
+                <div class="cell cell-value">0</div>
+                <button type="button" class="cell cell-minus" data-action="minus">-</button>
+              </div>
+              <div class="rating-col" data-rating="89">
+                <div class="cell cell-rating">89</div>
+                <button type="button" class="cell cell-plus" data-action="plus">+</button>
+                <div class="cell cell-value">0</div>
+                <button type="button" class="cell cell-minus" data-action="minus">-</button>
+              </div>
+              <div class="rating-col" data-rating="90">
+                <div class="cell cell-rating">90</div>
+                <button type="button" class="cell cell-plus" data-action="plus">+</button>
+                <div class="cell cell-value">0</div>
+                <button type="button" class="cell cell-minus" data-action="minus">-</button>
+              </div>
+              <div class="rating-col" data-rating="91">
+                <div class="cell cell-rating">91</div>
+                <button type="button" class="cell cell-plus" data-action="plus">+</button>
+                <div class="cell cell-value">0</div>
+                <button type="button" class="cell cell-minus" data-action="minus">-</button>
+              </div>
+              <div class="rating-col" data-rating="92">
+                <div class="cell cell-rating">92</div>
+                <button type="button" class="cell cell-plus" data-action="plus">+</button>
+                <div class="cell cell-value">0</div>
+                <button type="button" class="cell cell-minus" data-action="minus">-</button>
+              </div>
+              <div class="rating-col" data-rating="93">
+                <div class="cell cell-rating">93</div>
+                <button type="button" class="cell cell-plus" data-action="plus">+</button>
+                <div class="cell cell-value">0</div>
+                <button type="button" class="cell cell-minus" data-action="minus">-</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-wrapper grid-wrapper--totw">
+            <div class="grid-heading">
+              <div>
+                <h2>Forragem TOTW</h2>
+                <p>Opcionalmente informe cartas TOTW disponíveis.</p>
+              </div>
+              <span class="grid-heading__badge">OPCIONAL</span>
+            </div>
+            <div class="rating-grid rating-grid--totw" id="totwGrid">
               <div class="rating-col" data-rating="79">
                 <div class="cell cell-rating">79</div>
                 <button type="button" class="cell cell-plus" data-action="plus">+</button>
@@ -136,7 +244,65 @@
           <button type="submit" class="submit-button">Submit</button>
         </form>
 
-        <pre id="resultado" class="resultado"></pre>
+        <section class="results-section">
+          <div class="results-header">
+            <h2>Resultados</h2>
+            <p id="resultado" class="results-status">Informe os dados e clique em Submit para ver os elencos.</p>
+          </div>
+          <div class="results-shell">
+            <button type="button" id="resultPrev" class="result-nav" aria-label="Elenco anterior" disabled>&lsaquo;</button>
+            <div class="result-viewport">
+              <div id="resultTrack" class="result-track"></div>
+            </div>
+            <button type="button" id="resultNext" class="result-nav" aria-label="Próximo elenco" disabled>&rsaquo;</button>
+          </div>
+          <div id="resultPagination" class="result-pagination"></div>
+          <div class="result-totals">
+            <h3>Totais por OVR</h3>
+            <div id="resultTotals" class="totals-container">
+              <p class="totals-empty">Nenhum total calculado ainda.</p>
+            </div>
+          </div>
+
+          <div class="result-informs">
+            <h3>Informs usados</h3>
+            <div id="resultInforms" class="totals-container">
+              <p class="totals-empty">Nenhum Inform utilizado.</p>
+            </div>
+          </div>
+
+          <div id="partialAlert" class="partial-alert is-hidden">
+            <strong>Resultado parcial</strong>
+            <p>Não conseguimos completar todos os elencos. Veja abaixo as sugestões para montar o restante.</p>
+          </div>
+
+          <div id="faltantesWrapper" class="faltantes-wrapper is-hidden">
+            <div class="faltantes-header">
+              <h3>Próximos passos</h3>
+              <p>Utilize as combinações sugeridas para concluir os elencos pendentes.</p>
+            </div>
+            <div class="faltantes-grid">
+              <div class="faltante-column">
+                <h4>Sugestões completas</h4>
+                <div id="faltantesLista" class="faltante-list">
+                  <p class="totals-empty">Nenhum elenco pendente.</p>
+                </div>
+              </div>
+              <div class="faltante-column">
+                <h4>Tenho</h4>
+                <div id="faltantesPositivo" class="faltante-list">
+                  <p class="totals-empty">Nenhuma informação disponível.</p>
+                </div>
+              </div>
+              <div class="faltante-column">
+                <h4>Falta</h4>
+                <div id="faltantesNegativo" class="faltante-list">
+                  <p class="totals-empty">Nenhuma informação disponível.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
       </section>
     </main>
   </div>

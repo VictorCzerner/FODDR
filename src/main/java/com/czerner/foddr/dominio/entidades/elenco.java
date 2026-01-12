@@ -1,37 +1,67 @@
 package com.czerner.foddr.dominio.entidades;
 
-
-import com.czerner.foddr.dominio.dados.converters.IntMatrixJsonConverter;
-import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-@Entity
-@Table(name = "elenco")
-@Data
-@NoArgsConstructor
 public class elenco {
     
-    @Id
-    @Column(name = "ovr")
+
     private int OVR;
 
-    @Column(columnDefinition = "json", nullable = false)
-    @Convert(converter = IntMatrixJsonConverter.class)
+
     private int[][] tabela;
 
+    private int originalIndex;
 
-    public elenco(int OVR, int[][] tabela) {
+    private int totw;
+
+    private boolean completo = false;
+
+    private int[] solução;
+    private int[] solucaoIncompleta;
+    private int[] solucaoIncompletaTenho;
+    private int[] solucaoIncompletaFalta;
+    private int[] usoInforms;
+
+    public elenco(int OVR, int[][] tabela, int totw) {
         this.OVR = OVR;
         this.tabela = tabela;
+        this.totw=totw;
     }
 
+    public int getOriginalIndex() { return originalIndex; }
+    public void setOriginalIndex(int idx) { this.originalIndex = idx; }
 
+    public boolean getCompleto(){return completo;}
+    public void setCompleto(){completo=true;}
 
+    public void setSolucao(int[] solução){
+        this.solução=solução;
+    }
+    public void setSolucaoIncompleta(int[] solução){
+        solucaoIncompleta=solução;
+    }
+    public void setSolucaoIncompletaTenho(int[] solução){
+        solucaoIncompletaTenho=solução;
+    }
+    public void setSolucaoIncompletaFalta(int[] solução){
+        solucaoIncompletaFalta=solução;
+    }
+    public void setUsoInforms(int[] usoInforms){
+        this.usoInforms=usoInforms;
+    }
+    public int[] getSolucao(){
+        return solução;
+    }
+    public int[] getSolucaoIncompleta(){
+        return solucaoIncompleta;
+    }
+    public int[] getSolucaoIncompletaTenho(){
+        return solucaoIncompletaTenho;
+    }
+    public int[] getSolucaoIncompletaFalta(){
+        return solucaoIncompletaFalta;
+    }
+    public int[] getUsoInforms(){
+        return usoInforms;
+    }
 
     public int getOVR() {
         return OVR;
@@ -53,6 +83,14 @@ public class elenco {
 
     public void setTabela(int[][] tabela) {
         this.tabela = tabela;
+    }
+
+    public int getTotw(){
+        return totw;
+    }
+
+    public void setTotw(int totw){
+        this.totw=totw;
     }
 
 

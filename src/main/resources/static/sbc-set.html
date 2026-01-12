@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>FODDR | Detalhes do Set</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="app-header">
+      <div class="brand">FODDR</div>
+      <nav class="nav-links">
+        <a href="index.html">Calculadora</a>
+        <a href="sbc.html">Catálogo</a>
+        <a href="#">Contact</a>
+        <a href="#">Download</a>
+      </nav>
+    </header>
+
+    <main class="app-main">
+      <section class="sbc-panel sbc-set-detail">
+        <div class="catalog-header set-detail__header">
+          <div>
+            <p class="catalog-eyebrow">Squad Building Challenges</p>
+            <h1 id="setTitle">Detalhes do set</h1>
+            <p id="setSubtitle" class="set-detail__subtitle">Carregando informações…</p>
+          </div>
+          <div class="set-detail__actions">
+            <a href="sbc.html" class="catalog-refresh set-detail__back">← Voltar ao catálogo</a>
+          </div>
+        </div>
+
+        <div class="set-detail__meta" id="setMeta"></div>
+
+        <div class="catalog-content" id="setContent">
+          <div class="catalog-empty catalog-empty--loading">Carregando detalhes do set…</div>
+        </div>
+
+        <section class="set-resolver" id="setResolverSection">
+          <div class="set-resolver__header">
+            <div>
+              <h2>Resolver este set</h2>
+              <p>Informe sua forragem disponível e resolva automaticamente os desafios deste set.</p>
+            </div>
+            <button type="button" id="resolverSetBtn" class="submit-button">Resolver set</button>
+          </div>
+
+          <div class="grid-wrapper">
+            <div class="grid-heading">
+              <div>
+                <h3>Forragem base</h3>
+                <p>Atualize a quantidade de cartas disponíveis em cada OVR.</p>
+              </div>
+            </div>
+            <div class="rating-grid" id="setRatingGrid"></div>
+          </div>
+
+          <div class="grid-wrapper grid-wrapper--totw">
+            <div class="grid-heading">
+              <div>
+                <h3>Forragem TOTW</h3>
+                <p>Opcionalmente informe cartas TOTW disponíveis.</p>
+              </div>
+              <span class="grid-heading__badge">OPCIONAL</span>
+            </div>
+            <div class="rating-grid rating-grid--totw" id="setTotwGrid"></div>
+          </div>
+
+          <div class="resolver-status" id="resolverStatus">
+            Informe a forragem e clique em "Resolver set".
+          </div>
+        </section>
+
+        <section class="results-section set-results">
+          <div class="results-header">
+            <h2>Resultados</h2>
+            <p id="resolverResultado" class="results-status">
+              Informe a forragem acima e clique em "Resolver set" para ver as soluções.
+            </p>
+          </div>
+          <div class="results-shell">
+            <button type="button" id="resultPrev" class="result-nav" aria-label="Elenco anterior" disabled>&lsaquo;</button>
+            <div class="result-viewport">
+              <div id="resultTrack" class="result-track"></div>
+            </div>
+            <button type="button" id="resultNext" class="result-nav" aria-label="Próximo elenco" disabled>&rsaquo;</button>
+          </div>
+          <div id="resultPagination" class="result-pagination"></div>
+          <div class="result-totals">
+            <h3>Totais por OVR</h3>
+            <div id="resultTotals" class="totals-container">
+              <p class="totals-empty">Nenhum total calculado ainda.</p>
+            </div>
+          </div>
+
+          <div class="result-informs">
+            <h3>Informs usados</h3>
+            <div id="resultInforms" class="totals-container">
+              <p class="totals-empty">Nenhum Inform utilizado.</p>
+            </div>
+          </div>
+
+          <div id="partialAlert" class="partial-alert is-hidden">
+            <strong>Resultado parcial</strong>
+            <p>Não conseguimos completar todos os elencos. Veja abaixo as sugestões para montar o restante.</p>
+          </div>
+
+          <div id="faltantesWrapper" class="faltantes-wrapper is-hidden">
+            <div class="faltantes-header">
+              <h3>Próximos passos</h3>
+              <p>Utilize as combinações sugeridas para concluir os elencos pendentes.</p>
+            </div>
+            <div class="faltantes-grid">
+              <div class="faltante-column">
+                <h4>Sugestões completas</h4>
+                <div id="faltantesLista" class="faltante-list">
+                  <p class="totals-empty">Nenhum elenco pendente.</p>
+                </div>
+              </div>
+              <div class="faltante-column">
+                <h4>Tenho</h4>
+                <div id="faltantesPositivo" class="faltante-list">
+                  <p class="totals-empty">Nenhuma informação disponível.</p>
+                </div>
+              </div>
+              <div class="faltante-column">
+                <h4>Falta</h4>
+                <div id="faltantesNegativo" class="faltante-list">
+                  <p class="totals-empty">Nenhuma informação disponível.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const setId = params.get("setId");
+    const API_SETS = "/sbc-sets";
+    const RATING_START = 79;
+    const RATING_END = 93;
+    const TOTAL_RATINGS = RATING_END - RATING_START + 1;
+    const DEFAULT_FORRAGEM = {
+      79: 0,
+      80: 0,
+      81: 0,
+      82: 15,
+      83: 30,
+      84: 40,
+      85: 10,
+      86: 18,
+      87: 3,
+      88: 26,
+      89: 5,
+      90: 0,
+      91: 0,
+      92: 0,
+      93: 0
+    };
+    const DEFAULT_TOTW = {
+      79: 0,
+      80: 0,
+      81: 0,
+      82: 0,
+      83: 0,
+      84: 1,
+      85: 0,
+      86: 4,
+      87: 0,
+      88: 0,
+      89: 0,
+      90: 0,
+      91: 0,
+      92: 0,
+      93: 0
+    };
+
+    const titleEl = document.getElementById("setTitle");
+    const subtitleEl = document.getElementById("setSubtitle");
+    const metaEl = document.getElementById("setMeta");
+    const contentEl = document.getElementById("setContent");
+    const setRatingGrid = document.getElementById("setRatingGrid");
+    const setTotwGrid = document.getElementById("setTotwGrid");
+    const resolverBtn = document.getElementById("resolverSetBtn");
+    const resolverStatusEl = document.getElementById("resolverStatus");
+    const resultadoBox = document.getElementById("resolverResultado");
+    const resultTrack = document.getElementById("resultTrack");
+    const resultPrev = document.getElementById("resultPrev");
+    const resultNext = document.getElementById("resultNext");
+    const resultPagination = document.getElementById("resultPagination");
+    const resultTotals = document.getElementById("resultTotals");
+    const resultInforms = document.getElementById("resultInforms");
+    const partialAlert = document.getElementById("partialAlert");
+    const faltantesWrapper = document.getElementById("faltantesWrapper");
+    const faltantesLista = document.getElementById("faltantesLista");
+    const faltantesPositivo = document.getElementById("faltantesPositivo");
+    const faltantesNegativo = document.getElementById("faltantesNegativo");
+
+    const forragemCounts = Array(TOTAL_RATINGS).fill(0);
+    const forragemTotwCounts = Array(TOTAL_RATINGS).fill(0);
+    const resultState = {
+      currentIndex: 0,
+      cards: []
+    };
+
+    const normalizeCounts = (counts) => {
+      const normalized = Array(TOTAL_RATINGS).fill(0);
+      if (!Array.isArray(counts)) return normalized;
+      counts.forEach((value, index) => {
+        if (index < normalized.length) {
+          normalized[index] = Number(value) || 0;
+        }
+      });
+      return normalized;
+    };
+
+    const formatPlayerCount = (value) => (value === 1 ? "1 jogador" : `${value} jogadores`);
+
+    const setPartialAlertVisible = (visible) => {
+      if (!partialAlert) return;
+      partialAlert.classList.toggle("is-hidden", !visible);
+    };
+
+    const showResultPlaceholder = (message) => {
+      if (!resultTrack) return;
+      resultTrack.innerHTML = "";
+      const placeholder = document.createElement("div");
+      placeholder.className = "composition-empty";
+      placeholder.textContent = message;
+      resultTrack.appendChild(placeholder);
+      if (resultPagination) resultPagination.innerHTML = "";
+      resultState.cards = [];
+      resultState.currentIndex = 0;
+      if (resultPrev) resultPrev.disabled = true;
+      if (resultNext) resultNext.disabled = true;
+      if (resultTrack) resultTrack.style.transform = "translateX(0)";
+      renderTotals();
+      renderInformsSummary();
+      setPartialAlertVisible(false);
+      renderFaltantesSection(null, false);
+    };
+
+    const updateNavigation = () => {
+      const total = resultState.cards.length;
+      if (resultPrev) resultPrev.disabled = total <= 1 || resultState.currentIndex === 0;
+      if (resultNext) resultNext.disabled = total <= 1 || resultState.currentIndex === total - 1;
+      if (resultTrack) {
+        resultTrack.style.transform = `translateX(-${resultState.currentIndex * 100}%)`;
+      }
+    };
+
+    const renderPagination = () => {
+      if (!resultPagination) return;
+      resultPagination.innerHTML = "";
+      if (resultState.cards.length <= 1) return;
+      resultState.cards.forEach((_, index) => {
+        const dot = document.createElement("button");
+        dot.type = "button";
+        dot.className = `result-dot${index === resultState.currentIndex ? " is-active" : ""}`;
+        dot.addEventListener("click", () => {
+          resultState.currentIndex = index;
+          updateNavigation();
+          renderPagination();
+        });
+        resultPagination.appendChild(dot);
+      });
+    };
+
+    const renderTotals = (totalCounts) => {
+      if (!resultTotals) return;
+      resultTotals.innerHTML = "";
+
+      if (!Array.isArray(totalCounts) || totalCounts.length === 0) {
+        const empty = document.createElement("p");
+        empty.className = "totals-empty";
+        empty.textContent = "Nenhum total calculado ainda.";
+        resultTotals.appendChild(empty);
+        return;
+      }
+
+      const list = document.createElement("ul");
+      list.className = "composition-list totals-list";
+      let hasContent = false;
+
+      totalCounts.forEach((count = 0, index) => {
+        if (index >= TOTAL_RATINGS) return;
+        if (!count) return;
+        hasContent = true;
+        const rating = RATING_START + index;
+        const item = document.createElement("li");
+        item.className = "composition-item totals-item";
+
+        const ratingSpan = document.createElement("span");
+        ratingSpan.textContent = `OVR ${rating}`;
+
+        const countSpan = document.createElement("span");
+        countSpan.textContent = formatPlayerCount(count);
+
+        item.append(ratingSpan, countSpan);
+        list.appendChild(item);
+      });
+
+      if (!hasContent) {
+        const empty = document.createElement("p");
+        empty.className = "totals-empty";
+        empty.textContent = "Nenhum total calculado ainda.";
+        resultTotals.appendChild(empty);
+        return;
+      }
+
+      resultTotals.appendChild(list);
+    };
+
+    const renderInformsSummary = (informsList) => {
+      if (!resultInforms) return;
+      resultInforms.innerHTML = "";
+
+      if (!Array.isArray(informsList) || informsList.length === 0) {
+        const empty = document.createElement("p");
+        empty.className = "totals-empty";
+        empty.textContent = "Nenhum Inform utilizado.";
+        resultInforms.appendChild(empty);
+        return;
+      }
+
+      const totals = Array(TOTAL_RATINGS).fill(0);
+      let hasData = false;
+
+      informsList.forEach((counts = []) => {
+        if (!Array.isArray(counts)) return;
+        counts.forEach((value, index) => {
+          if (index >= TOTAL_RATINGS) return;
+          const numeric = Number(value) || 0;
+          if (numeric > 0) hasData = true;
+          totals[index] += numeric;
+        });
+      });
+
+      if (!hasData) {
+        const empty = document.createElement("p");
+        empty.className = "totals-empty";
+        empty.textContent = "Nenhum Inform utilizado.";
+        resultInforms.appendChild(empty);
+        return;
+      }
+
+      const list = document.createElement("ul");
+      list.className = "composition-list totals-list";
+
+      totals.forEach((count, index) => {
+        if (!count) return;
+        const rating = RATING_START + index;
+        const item = document.createElement("li");
+        item.className = "composition-item totals-item";
+
+        const ratingSpan = document.createElement("span");
+        ratingSpan.textContent = `OVR ${rating}`;
+
+        const countSpan = document.createElement("span");
+        countSpan.textContent = count === 1 ? "1 Inform" : `${count} Informs`;
+
+        item.append(ratingSpan, countSpan);
+        list.appendChild(item);
+      });
+
+      resultInforms.appendChild(list);
+    };
+
+    const buildCompositionList = (counts = []) => {
+      const normalized = normalizeCounts(counts);
+      const list = document.createElement("ul");
+      list.className = "composition-list";
+      let hasContent = false;
+
+      normalized.forEach((count, index) => {
+        if (!count) return;
+        hasContent = true;
+        const rating = RATING_START + index;
+        const item = document.createElement("li");
+        item.className = "composition-item";
+
+        const ratingSpan = document.createElement("span");
+        ratingSpan.textContent = `OVR ${rating}`;
+
+        const countSpan = document.createElement("span");
+        countSpan.textContent = formatPlayerCount(count);
+
+        item.append(ratingSpan, countSpan);
+        list.appendChild(item);
+      });
+
+      if (!hasContent) {
+        const empty = document.createElement("div");
+        empty.className = "composition-empty";
+        empty.textContent = "Nenhum jogador informado para este elenco.";
+        return empty;
+      }
+
+      return list;
+    };
+
+    const hasInformUsage = (counts = []) => {
+      if (!Array.isArray(counts)) return false;
+      return counts.some((value) => Number(value) > 0);
+    };
+
+    const buildInformsList = (counts = []) => {
+      const normalized = normalizeCounts(counts);
+      const list = document.createElement("ul");
+      list.className = "composition-list";
+      let hasContent = false;
+
+      normalized.forEach((count, index) => {
+        if (!count) return;
+        hasContent = true;
+        const rating = RATING_START + index;
+        const item = document.createElement("li");
+        item.className = "composition-item";
+
+        const ratingSpan = document.createElement("span");
+        ratingSpan.textContent = `OVR ${rating}`;
+
+        const countLabel = count === 1 ? "1 Inform" : `${count} Informs`;
+        const countSpan = document.createElement("span");
+        countSpan.textContent = countLabel;
+
+        item.append(ratingSpan, countSpan);
+        list.appendChild(item);
+      });
+
+      if (!hasContent) {
+        const empty = document.createElement("p");
+        empty.className = "inform-empty";
+        empty.textContent = "Nenhum Inform utilizado.";
+        return empty;
+      }
+
+      return list;
+    };
+
+    const createInformBlock = (counts) => {
+      const block = document.createElement("div");
+      block.className = "inform-block";
+
+      const title = document.createElement("h4");
+      title.textContent = "Informs usados";
+      block.appendChild(title);
+
+      if (!hasInformUsage(counts)) {
+        const empty = document.createElement("p");
+        empty.className = "inform-empty";
+        empty.textContent = "Nenhum Inform utilizado.";
+        block.appendChild(empty);
+        return block;
+      }
+
+      block.appendChild(buildInformsList(counts));
+      return block;
+    };
+
+    const renderFaltantesColumn = (container, combos, labelPrefix) => {
+      if (!container) return;
+      container.innerHTML = "";
+
+      if (!Array.isArray(combos) || combos.length === 0) {
+        const empty = document.createElement("p");
+        empty.className = "totals-empty";
+        empty.textContent = "Nenhum dado disponível.";
+        container.appendChild(empty);
+        return;
+      }
+
+      combos.forEach((counts, index) => {
+        const card = document.createElement("article");
+        card.className = "faltante-card";
+
+        const title = document.createElement("h5");
+        title.textContent = `${labelPrefix} ${index + 1}`;
+        card.appendChild(title);
+
+        card.appendChild(buildCompositionList(counts));
+        container.appendChild(card);
+      });
+    };
+
+    const renderFaltantesSection = (payload, shouldShow) => {
+      if (!faltantesWrapper) return;
+
+      const faltantes = payload && Array.isArray(payload?.elencosFaltantes) ? payload.elencosFaltantes : [];
+      const positivos = payload && Array.isArray(payload?.elencosFaltantesPositivo) ? payload.elencosFaltantesPositivo : [];
+      const negativos = payload && Array.isArray(payload?.elencosFaltantesNegativo) ? payload.elencosFaltantesNegativo : [];
+
+      const hasData = shouldShow && (faltantes.length || positivos.length || negativos.length);
+      faltantesWrapper.classList.toggle("is-hidden", !hasData);
+
+      if (!hasData) {
+        [faltantesLista, faltantesPositivo, faltantesNegativo].forEach((container) => {
+          if (container) container.innerHTML = "";
+        });
+        return;
+      }
+
+      renderFaltantesColumn(faltantesLista, faltantes, "Sugestão");
+      renderFaltantesColumn(faltantesPositivo, positivos, "Tenho");
+      renderFaltantesColumn(faltantesNegativo, negativos, "Falta");
+    };
+
+    const createResultCard = (counts, index, targetOvr, options = {}) => {
+      const normalizedCounts = normalizeCounts(counts);
+      const isPending = Boolean(options.isPending);
+      const informsCounts = options.informs;
+      const card = document.createElement("article");
+      card.className = `result-card${isPending ? " result-card--pending" : ""}`;
+
+      const title = document.createElement("h3");
+      title.textContent = `Elenco ${index + 1}`;
+      card.appendChild(title);
+
+      const statusBadge = document.createElement("span");
+      statusBadge.className = `result-status-badge ${isPending ? "is-warning" : "is-success"}`;
+      statusBadge.textContent = isPending ? "Pendente" : "Completo";
+      card.appendChild(statusBadge);
+
+      const metaContainer = document.createElement("div");
+      metaContainer.className = "result-meta";
+
+      const totalPlayers = normalizedCounts.reduce((acc, value) => acc + value, 0);
+      const weightedSum = normalizedCounts.reduce((acc, value, pos) => acc + value * (RATING_START + pos), 0);
+      const average = totalPlayers ? (weightedSum / totalPlayers).toFixed(1) : "0.0";
+
+      const firstRating = (() => {
+        for (let i = 0; i < normalizedCounts.length; i++) {
+          if (normalizedCounts[i]) return RATING_START + i;
+        }
+        return "--";
+      })();
+
+      const lastRating = (() => {
+        for (let i = normalizedCounts.length - 1; i >= 0; i--) {
+          if (normalizedCounts[i]) return RATING_START + i;
+        }
+        return "--";
+      })();
+
+      const targetLabel = Number.isFinite(targetOvr) ? `OVR alvo ${targetOvr}` : `OVR médio ${average}`;
+      const metaItems = [
+        `${totalPlayers} jogadores`,
+        targetLabel,
+        `Intervalo ${firstRating} - ${lastRating}`
+      ];
+
+      metaItems.forEach((label) => {
+        const badge = document.createElement("span");
+        badge.className = "result-meta__item";
+        badge.textContent = label;
+        metaContainer.appendChild(badge);
+      });
+
+      card.appendChild(metaContainer);
+
+      const composition = buildCompositionList(normalizedCounts);
+      card.appendChild(composition);
+
+      if (hasInformUsage(informsCounts)) {
+        card.appendChild(createInformBlock(informsCounts));
+      }
+
+      return card;
+    };
+
+    const renderSolutions = (payload, ovrs = []) => {
+      if (!resultadoBox) return;
+      const elencos = payload && Array.isArray(payload.elencosCompletos) ? payload.elencosCompletos : [];
+      const informs = payload && Array.isArray(payload.informsUsado) ? payload.informsUsado : [];
+      const targetOvrs = (() => {
+        const elencosResp = payload && payload.sbc && Array.isArray(payload.sbc.elencos) ? payload.sbc.elencos : [];
+        if (!elencosResp.length) return ovrs;
+
+        // Usa originalIndex do backend para manter o OVR na ordem correta
+        return elencosResp
+          .slice()
+          .sort((a, b) => Number(a.originalIndex ?? 0) - Number(b.originalIndex ?? 0))
+          .map((elenco) => {
+            const valor = elenco.ovr ?? elenco.OVR;
+            return Number.isFinite(Number(valor)) ? Number(valor) : undefined;
+          });
+      })();
+
+      if (elencos.length === 0) {
+        resultadoBox.textContent = "Nenhum elenco completo encontrado.";
+        showResultPlaceholder("Nenhum elenco foi retornado para os dados informados.");
+        return;
+      }
+
+      if (resultTrack) resultTrack.innerHTML = "";
+      resultState.cards = elencos.map((counts, index) =>
+        createResultCard(counts, index, targetOvrs[index], {
+          isPending: !Array.isArray(counts),
+          informs: informs[index]
+        })
+      );
+      resultState.cards.forEach((card) => resultTrack?.appendChild(card));
+      resultState.currentIndex = 0;
+
+      const completedCount = elencos.filter((counts) => Array.isArray(counts)).length;
+      const hasPending = completedCount !== elencos.length;
+      resultadoBox.textContent = hasPending
+        ? `Resultado parcial: ${completedCount} de ${elencos.length} elenco(s) completos.`
+        : `Elencos completos encontrados: ${resultState.cards.length}`;
+
+      updateNavigation();
+      renderPagination();
+
+      const totals = (() => {
+        if (payload && Array.isArray(payload.total) && payload.total.length) {
+          return normalizeCounts(payload.total);
+        }
+        return elencos.reduce((acc, counts) => {
+          if (!Array.isArray(counts)) return acc;
+          counts.forEach((value, index) => {
+            if (index < acc.length) acc[index] += Number(value) || 0;
+          });
+          return acc;
+        }, Array(TOTAL_RATINGS).fill(0));
+      })();
+
+      renderTotals(totals);
+      renderInformsSummary(informs);
+      setPartialAlertVisible(hasPending);
+      renderFaltantesSection(payload, hasPending);
+    };
+
+    const goToPage = (index) => {
+      if (index < 0 || index >= resultState.cards.length) return;
+      resultState.currentIndex = index;
+      updateNavigation();
+      renderPagination();
+    };
+
+    resultPrev?.addEventListener("click", () => {
+      goToPage(resultState.currentIndex - 1);
+    });
+
+    resultNext?.addEventListener("click", () => {
+      goToPage(resultState.currentIndex + 1);
+    });
+
+    const extractTargetOvrs = (payload) => {
+      const elencos = payload?.sbc?.elencos;
+      if (!Array.isArray(elencos)) return [];
+      return elencos.map((item) => {
+        const value = item?.ovr ?? item?.OVR ?? item?.Ovr ?? item?.ovR;
+        const numeric = Number(value);
+        return Number.isFinite(numeric) ? numeric : undefined;
+      });
+    };
+
+    const formatDate = (timestamp) => {
+      if (!timestamp) return "Sem data";
+      const date = new Date(Number(timestamp) * 1000);
+      if (Number.isNaN(date.getTime())) return "Sem data";
+      return date.toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "short",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    };
+
+    const showMessage = (message, variant = "muted") => {
+      contentEl.innerHTML = "";
+      const box = document.createElement("div");
+      const classes = ["catalog-empty"];
+      if (variant) classes.push(`catalog-empty--${variant}`);
+      box.className = classes.join(" ");
+      box.textContent = message;
+      contentEl.appendChild(box);
+    };
+
+    const createGridColumn = (rating) => {
+      const column = document.createElement("div");
+      column.className = "rating-col";
+      column.dataset.rating = rating;
+
+      const ratingCell = document.createElement("div");
+      ratingCell.className = "cell cell-rating";
+      ratingCell.textContent = rating;
+
+      const plusButton = document.createElement("button");
+      plusButton.type = "button";
+      plusButton.className = "cell cell-plus";
+      plusButton.dataset.action = "plus";
+      plusButton.textContent = "+";
+
+      const valueCell = document.createElement("div");
+      valueCell.className = "cell cell-value";
+      valueCell.textContent = "0";
+
+      const minusButton = document.createElement("button");
+      minusButton.type = "button";
+      minusButton.className = "cell cell-minus";
+      minusButton.dataset.action = "minus";
+      minusButton.textContent = "-";
+
+      column.append(ratingCell, plusButton, valueCell, minusButton);
+      return column;
+    };
+
+    const renderRatingGrid = (gridEl) => {
+      if (!gridEl) return;
+      gridEl.innerHTML = "";
+      for (let rating = RATING_START; rating <= RATING_END; rating++) {
+        gridEl.appendChild(createGridColumn(rating));
+      }
+    };
+
+    const updateGridValue = (gridEl, rating, value) => {
+      if (!gridEl) return;
+      const valueCell = gridEl.querySelector(`.rating-col[data-rating="${rating}"] .cell-value`);
+      if (valueCell) {
+        valueCell.textContent = value;
+      }
+    };
+
+    const handleGridClick = (event, gridEl, counts) => {
+      const button = event.target.closest("button[data-action]");
+      if (!button) return;
+      const column = button.closest(".rating-col");
+      if (!column) return;
+      const rating = Number(column.dataset.rating);
+      if (Number.isNaN(rating)) return;
+
+      const index = rating - RATING_START;
+      if (index < 0 || index >= counts.length) return;
+
+      const delta = button.dataset.action === "plus" ? 1 : -1;
+      const nextValue = Math.max(0, (counts[index] || 0) + delta);
+      counts[index] = nextValue;
+      updateGridValue(gridEl, rating, nextValue);
+    };
+
+    const applyDefaultsToGrid = (gridEl, counts, defaultsMap) => {
+      if (!gridEl || !defaultsMap) return;
+      Object.entries(defaultsMap).forEach(([ratingStr, value]) => {
+        const rating = Number(ratingStr);
+        const index = rating - RATING_START;
+        if (Number.isNaN(rating) || index < 0 || index >= counts.length) return;
+        counts[index] = Number(value) || 0;
+        updateGridValue(gridEl, rating, counts[index]);
+      });
+    };
+
+    const attachGridListeners = () => {
+      if (setRatingGrid) {
+        setRatingGrid.addEventListener("click", (event) =>
+          handleGridClick(event, setRatingGrid, forragemCounts)
+        );
+      }
+      if (setTotwGrid) {
+        setTotwGrid.addEventListener("click", (event) =>
+          handleGridClick(event, setTotwGrid, forragemTotwCounts)
+        );
+      }
+    };
+
+    const updateResolverStatus = (message, variant = "muted") => {
+      if (!resolverStatusEl) return;
+      resolverStatusEl.textContent = message;
+      resolverStatusEl.classList.remove("is-error", "is-success", "is-loading");
+      if (variant === "error") {
+        resolverStatusEl.classList.add("is-error");
+      } else if (variant === "loading") {
+        resolverStatusEl.classList.add("is-loading");
+      } else if (variant === "success") {
+        resolverStatusEl.classList.add("is-success");
+      }
+    };
+
+    const getPayloadCounts = (counts) => counts.slice(0, TOTAL_RATINGS);
+
+    const resolverSet = async () => {
+      if (!resolverBtn) return;
+      if (!setId) {
+        updateResolverStatus("Set não informado.", "error");
+        return;
+      }
+
+      try {
+        resolverBtn.disabled = true;
+        updateResolverStatus("Resolvendo set…", "loading");
+        if (resultadoBox) resultadoBox.textContent = "Carregando...";
+        showResultPlaceholder("Buscando elencos...");
+
+        const response = await fetch(`${API_SETS}/${encodeURIComponent(setId)}/resolver`, {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            forragem: getPayloadCounts(forragemCounts),
+            forragemTotw: getPayloadCounts(forragemTotwCounts)
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`Erro ${response.status}`);
+        }
+
+        const data = await response.json();
+        renderSolutions(data, extractTargetOvrs(data));
+        const totalElencos = Array.isArray(data?.elencosCompletos) ? data.elencosCompletos.length : 0;
+        updateResolverStatus(`Set resolvido! ${totalElencos} elenco(s) encontrados.`, "success");
+      } catch (error) {
+        console.error("Erro ao resolver set:", error);
+        updateResolverStatus("Não foi possível resolver o set agora. Tente novamente.", "error");
+        if (resultadoBox) {
+          resultadoBox.textContent = "Erro ao carregar elencos.";
+        }
+        showResultPlaceholder("Não foi possível carregar os elencos.");
+      } finally {
+        if (resolverBtn) {
+          resolverBtn.disabled = false;
+        }
+      }
+    };
+
+    const createMetaBadge = (label, value) => {
+      const item = document.createElement("div");
+      item.className = "set-meta-badge";
+
+      const labelSpan = document.createElement("span");
+      labelSpan.className = "set-meta-badge__label";
+      labelSpan.textContent = label;
+
+      const valueSpan = document.createElement("span");
+      valueSpan.className = "set-meta-badge__value";
+      valueSpan.textContent = value;
+
+      item.append(labelSpan, valueSpan);
+      return item;
+    };
+
+    const renderMeta = (set) => {
+      metaEl.innerHTML = "";
+      metaEl.appendChild(createMetaBadge("Set ID", set.setId ?? "—"));
+      metaEl.appendChild(createMetaBadge("Categoria", set.categoryName || "Não informada"));
+      metaEl.appendChild(createMetaBadge("Expira em", formatDate(set.expiresAt)));
+    };
+
+    const renderRequirements = (requirements = []) => {
+      if (!requirements.length) {
+        const emptyReq = document.createElement("li");
+        emptyReq.textContent = "Sem requisitos informados.";
+        return [emptyReq];
+      }
+
+      return requirements.map((req) => {
+        const item = document.createElement("li");
+        item.className = "set-requirement";
+
+        const header = document.createElement("div");
+        header.className = "set-requirement__header";
+        header.textContent = req.type || "Requisito";
+
+        const details = document.createElement("div");
+        details.className = "set-requirement__details";
+
+        const parts = [];
+        if (req.eligibilityValue != null) {
+          parts.push(`Valor: ${req.eligibilityValue}`);
+        }
+        if (req.nationId != null) {
+          parts.push(`Nação #${req.nationId}`);
+        }
+        if (req.leagueId != null) {
+          parts.push(`Liga #${req.leagueId}`);
+        }
+        if (req.clubId != null) {
+          parts.push(`Clube #${req.clubId}`);
+        }
+
+        details.textContent = parts.length ? parts.join(" · ") : "Sem detalhes adicionais";
+
+        item.append(header, details);
+        return item;
+      });
+    };
+
+    const renderChallenge = (challenge) => {
+      const card = document.createElement("article");
+      card.className = "catalog-card challenge-card";
+
+      const header = document.createElement("div");
+      header.className = "challenge-card__header";
+
+      const title = document.createElement("h3");
+      title.className = "catalog-card__title";
+      title.textContent = challenge.name || `Desafio ${challenge.challengeId}`;
+
+      const repeatable = document.createElement("span");
+      repeatable.className = `challenge-card__tag ${challenge.repeatable ? "is-repeatable" : ""}`;
+      repeatable.textContent = challenge.repeatable ? "Repetível" : "Único";
+
+      header.append(title, repeatable);
+      card.appendChild(header);
+
+      const meta = document.createElement("ul");
+      meta.className = "catalog-card__meta";
+
+      const formationRow = document.createElement("li");
+      formationRow.className = "catalog-card__meta-item";
+      formationRow.innerHTML = `<span class="catalog-card__meta-label">Formação</span><span class="catalog-card__meta-value">${challenge.formation || "—"}</span>`;
+
+      const expiresRow = document.createElement("li");
+      expiresRow.className = "catalog-card__meta-item";
+      expiresRow.innerHTML = `<span class="catalog-card__meta-label">Expira em</span><span class="catalog-card__meta-value">${formatDate(challenge.expiresAt)}</span>`;
+
+      meta.append(formationRow, expiresRow);
+      card.appendChild(meta);
+
+      const reqList = document.createElement("ul");
+      reqList.className = "set-requirements";
+      renderRequirements(challenge.requirements).forEach((req) => reqList.appendChild(req));
+      card.appendChild(reqList);
+
+      return card;
+    };
+
+    const renderChallenges = (challenges = []) => {
+      contentEl.innerHTML = "";
+      if (!challenges.length) {
+        showMessage("Nenhum desafio encontrado para este set.", "muted");
+        return;
+      }
+
+      const grid = document.createElement("div");
+      grid.className = "catalog-grid";
+      challenges.forEach((challenge) => grid.appendChild(renderChallenge(challenge)));
+      contentEl.appendChild(grid);
+    };
+
+    const renderSet = (set) => {
+      titleEl.textContent = set.name || "Set sem nome";
+      subtitleEl.textContent = set.categoryName ? `Categoria: ${set.categoryName}` : "Categoria não informada.";
+      renderMeta(set);
+      renderChallenges(set.challenges);
+    };
+
+    const carregarSet = async () => {
+      if (!setId) {
+        showMessage("Set não informado. Volte ao catálogo e selecione um set.", "error");
+        subtitleEl.textContent = "ID do set ausente.";
+        return;
+      }
+
+      showMessage("Carregando detalhes do set…", "loading");
+
+      try {
+        const response = await fetch(`${API_SETS}/${encodeURIComponent(setId)}`, {
+          headers: { Accept: "application/json" }
+        });
+
+        if (!response.ok) {
+          throw new Error(`Erro ${response.status}`);
+        }
+
+        const data = await response.json();
+        renderSet(data);
+      } catch (error) {
+        console.error("Erro ao carregar set:", error);
+        showMessage("Não foi possível carregar os detalhes agora. Tente novamente mais tarde.", "error");
+        subtitleEl.textContent = "Erro ao carregar dados.";
+      }
+    };
+
+    const inicializarResolver = () => {
+      renderRatingGrid(setRatingGrid);
+      renderRatingGrid(setTotwGrid);
+      applyDefaultsToGrid(setRatingGrid, forragemCounts, DEFAULT_FORRAGEM);
+      applyDefaultsToGrid(setTotwGrid, forragemTotwCounts, DEFAULT_TOTW);
+      attachGridListeners();
+      if (resolverBtn) {
+        resolverBtn.addEventListener("click", resolverSet);
+      }
+    };
+
+    showResultPlaceholder("Nenhum elenco carregado.");
+    inicializarResolver();
+    carregarSet();
+  </script>
+</body>
+</html>

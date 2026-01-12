@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>FODDR | Catálogo de SBCs</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="app-header">
+      <div class="brand">FODDR</div>
+      <nav class="nav-links">
+        <a href="index.html">Calculadora</a>
+        <a href="#">Contact</a>
+        <a href="#">Download</a>
+      </nav>
+    </header>
+
+    <main class="app-main">
+      <section class="sbc-panel sbc-catalog">
+        <div class="catalog-header">
+          <div>
+            <p class="catalog-eyebrow">Squad Building Challenges</p>
+            <h1>Catálogo de SBCs</h1>
+            <p>Explore as categorias disponíveis e encontre os desafios ativos.</p>
+          </div>
+          <button type="button" id="reloadCategorias" class="catalog-refresh">
+            Atualizar
+          </button>
+        </div>
+
+        <div class="catalog-tabs" id="tabs" role="tablist" aria-label="Categorias de SBC"></div>
+
+        <div class="catalog-content" id="content">
+          <div class="catalog-empty catalog-empty--loading">Carregando SBCs…</div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const API_CATEGORIES = "/api/sbc/categories";
+    const tabsContainer = document.getElementById("tabs");
+    const contentContainer = document.getElementById("content");
+    const reloadBtn = document.getElementById("reloadCategorias");
+
+    const state = {
+      categorias: [],
+      activeIndex: 0
+    };
+
+    const setRefreshLoading = (loading) => {
+      if (!reloadBtn) return;
+      reloadBtn.disabled = loading;
+      reloadBtn.textContent = loading ? "Atualizando..." : "Atualizar";
+    };
+
+    const showStatusMessage = (message, variant = "muted") => {
+      contentContainer.innerHTML = "";
+      const box = document.createElement("div");
+      const classes = ["catalog-empty"];
+      if (variant) {
+        classes.push(`catalog-empty--${variant}`);
+      }
+      box.className = classes.join(" ");
+      box.textContent = message;
+      contentContainer.appendChild(box);
+    };
+
+    const formatExpireDate = (timestamp) => {
+      if (!timestamp) return "Sem data";
+      const date = new Date(timestamp * 1000);
+      if (Number.isNaN(date.getTime())) return "Sem data";
+      return date.toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "short",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    };
+
+    const createMetaRow = (label, value) => {
+      const item = document.createElement("li");
+      item.className = "catalog-card__meta-item";
+
+      const labelSpan = document.createElement("span");
+      labelSpan.className = "catalog-card__meta-label";
+      labelSpan.textContent = label;
+
+      const valueSpan = document.createElement("span");
+      valueSpan.className = "catalog-card__meta-value";
+      valueSpan.textContent = value;
+
+      item.append(labelSpan, valueSpan);
+      return item;
+    };
+
+    const criarCard = (set = {}) => {
+      const card = document.createElement("article");
+      card.className = "catalog-card";
+      card.setAttribute("role", "button");
+      card.setAttribute("tabindex", "0");
+
+      const label = set.name || set.setId ? `Abrir detalhes do set ${set.name || set.setId}` : "Abrir detalhes do set";
+      card.setAttribute("aria-label", label);
+
+      const title = document.createElement("h3");
+      title.className = "catalog-card__title";
+      title.textContent = set.name || "Set sem nome";
+      card.appendChild(title);
+
+      const metaList = document.createElement("ul");
+      metaList.className = "catalog-card__meta";
+      metaList.appendChild(createMetaRow("Set ID", set.setId ?? "—"));
+      metaList.appendChild(createMetaRow("Expira em", formatExpireDate(set.expiresAt)));
+      card.appendChild(metaList);
+
+      const action = document.createElement("div");
+      action.className = "catalog-card__action";
+      const actionText = document.createElement("span");
+      actionText.textContent = "Ver detalhes";
+      const actionIcon = document.createElement("span");
+      actionIcon.setAttribute("aria-hidden", "true");
+      actionIcon.textContent = "→";
+      action.append(actionText, actionIcon);
+      card.appendChild(action);
+
+      const handleActivate = (event) => {
+        if (event.type === "keydown" && event.key !== "Enter" && event.key !== " ") {
+          return;
+        }
+        event.preventDefault();
+        abrirSet(set.setId);
+      };
+
+      card.addEventListener("click", handleActivate);
+      card.addEventListener("keydown", handleActivate);
+
+      return card;
+    };
+
+    async function carregarCategorias() {
+      setRefreshLoading(true);
+      showStatusMessage("Carregando SBCs…", "loading");
+
+      try {
+        const response = await fetch(API_CATEGORIES, {
+          headers: { Accept: "application/json" }
+        });
+
+        if (!response.ok) {
+          throw new Error(`Erro ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (!Array.isArray(data) || data.length === 0) {
+          tabsContainer.innerHTML = "";
+          showStatusMessage("Nenhuma categoria encontrada no momento.", "muted");
+          return;
+        }
+
+        renderizar(data);
+      } catch (error) {
+        console.error("Erro ao carregar SBCs:", error);
+        tabsContainer.innerHTML = "";
+        showStatusMessage("Não foi possível carregar os SBCs agora. Tente novamente mais tarde.", "error");
+      } finally {
+        setRefreshLoading(false);
+      }
+    }
+
+    function renderizar(categorias) {
+      state.categorias = categorias;
+      state.activeIndex = 0;
+
+      tabsContainer.innerHTML = "";
+      contentContainer.innerHTML = "";
+
+      categorias.forEach((categoria, index) => {
+        const tab = document.createElement("button");
+        tab.type = "button";
+        tab.className = `catalog-tab${index === 0 ? " is-active" : ""}`;
+        tab.textContent = categoria.category || `Categoria ${index + 1}`;
+        tab.setAttribute("role", "tab");
+        tab.setAttribute("aria-selected", index === 0 ? "true" : "false");
+        tab.id = `catalog-tab-${index}`;
+        tab.setAttribute("aria-controls", `catalog-panel-${index}`);
+        tab.addEventListener("click", () => selecionarCategoria(index));
+        tabsContainer.appendChild(tab);
+
+        const panel = document.createElement("section");
+        panel.className = `catalog-category${index === 0 ? " is-active" : ""}`;
+        panel.setAttribute("role", "tabpanel");
+        panel.id = `catalog-panel-${index}`;
+        panel.setAttribute("aria-labelledby", tab.id);
+        panel.hidden = index !== 0;
+
+        const sets = Array.isArray(categoria.sets) ? categoria.sets : [];
+
+        if (sets.length === 0) {
+          const empty = document.createElement("div");
+          empty.className = "catalog-empty catalog-empty--muted";
+          empty.textContent = "Nenhum set disponível nesta categoria.";
+          panel.appendChild(empty);
+        } else {
+          const grid = document.createElement("div");
+          grid.className = "catalog-grid";
+          sets.forEach((setInfo) => grid.appendChild(criarCard(setInfo)));
+          panel.appendChild(grid);
+        }
+
+        contentContainer.appendChild(panel);
+      });
+    }
+
+    function selecionarCategoria(index) {
+      state.activeIndex = index;
+
+      const tabs = tabsContainer.querySelectorAll(".catalog-tab");
+      const panels = contentContainer.querySelectorAll(".catalog-category");
+
+      tabs.forEach((tab, idx) => {
+        const isActive = idx === index;
+        tab.classList.toggle("is-active", isActive);
+        tab.setAttribute("aria-selected", isActive ? "true" : "false");
+      });
+
+      panels.forEach((panel, idx) => {
+        const isActive = idx === index;
+        panel.classList.toggle("is-active", isActive);
+        panel.hidden = !isActive;
+      });
+    }
+
+    function abrirSet(setId) {
+      if (!setId) {
+        console.warn("Set sem identificador");
+        return;
+      }
+
+      window.location.href = `sbc-set.html?setId=${encodeURIComponent(setId)}`;
+    }
+
+    if (reloadBtn) {
+      reloadBtn.addEventListener("click", carregarCategorias);
+    }
+
+    carregarCategorias();
+  </script>
+</body>
+</html>

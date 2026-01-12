@@ -54,7 +54,7 @@ public class ElencoController {
         ElencoResponse elencoResponse = buscaMenorPossivelUC.executar(request.getOvr(),
                 request.getMinRating(), request.getMaxRating());
         forragens jogadores = new forragens(request.getForragem());
-        elenco elencoCalculado = new elenco(elencoResponse.getOVR(), elencoResponse.getTabela());
+        elenco elencoCalculado = new elenco(elencoResponse.getOVR(), elencoResponse.getTabela(), 0);
         List<int[]> solucoes = elencoService.SoluçõesPossiveis(elencoCalculado, jogadores);
         return ResponseEntity.ok(new SolucoesPossiveisPresenter(solucoes));
     }

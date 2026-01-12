@@ -3,22 +3,18 @@ package com.czerner.foddr.dominio.entidades;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.czerner.foddr.dominio.serviços.elencoService;
-
 public class SBC {
 
     private int numElencos;
-    private List<elenco> elencos;
+    private final List<elenco> elencos;
     private boolean completo;
-    elencoService serviços;
 
-    public SBC(int numElencos, int[] ovrs, elencoService elencoService) throws Exception {
-        this.serviços = elencoService;
-        this.numElencos = numElencos;
-        this.elencos = new ArrayList<>();
-        for (int i = 0; i < numElencos; i++) {
-            elencos.add(serviços.CriaElenco(ovrs[i], 79, 93));
+    public SBC(List<elenco> elencos) {
+        if (elencos == null) {
+            throw new IllegalArgumentException("Lista de elencos não pode ser nula.");
         }
+        this.elencos = new ArrayList<>(elencos);
+        this.numElencos = elencos.size();
         this.completo = false;
     }
 

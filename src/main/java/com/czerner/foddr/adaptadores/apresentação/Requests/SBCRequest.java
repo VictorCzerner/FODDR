@@ -1,5 +1,7 @@
 package com.czerner.foddr.adaptadores.apresentação.Requests;
 
+import java.util.List;
+
 /**
  * DTO usado pelo endpoint /sbc/encontrar.
  * Mantem a estrutura esperada no JSON de entrada.
@@ -8,6 +10,7 @@ public class SBCRequest {
 
     private SBCData sbc;
     private int[] forragem;
+    private int[] forragemTotw;
 
     public SBCData getSbc() {
         return sbc;
@@ -25,24 +28,44 @@ public class SBCRequest {
         this.forragem = forragem;
     }
 
+    public int[] getForragemTotw() {
+        return forragemTotw;
+    }
+
+    public void setForragemTotw(int[] forragemTotw) {
+        this.forragemTotw = forragemTotw;
+    }
+
     public static class SBCData {
-        private int numElencos;
-        private int[] ovrs;
+        private List<ElencoData> elencos;
 
-        public int getNumElencos() {
-            return numElencos;
+        public List<ElencoData> getElencos() {
+            return elencos;
         }
 
-        public void setNumElencos(int numElencos) {
-            this.numElencos = numElencos;
+        public void setElencos(List<ElencoData> elencos) {
+            this.elencos = elencos;
+        }
+    }
+
+    public static class ElencoData {
+        private int ovr;
+        private int informs;
+
+        public int getOvr() {
+            return ovr;
         }
 
-        public int[] getOvrs() {
-            return ovrs;
+        public void setOvr(int ovr) {
+            this.ovr = ovr;
         }
 
-        public void setOvrs(int[] ovrs) {
-            this.ovrs = ovrs;
+        public int getInforms() {
+            return informs;
+        }
+
+        public void setInforms(int informs) {
+            this.informs = informs;
         }
     }
 }
