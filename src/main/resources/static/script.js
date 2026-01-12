@@ -1,9 +1,9 @@
 const RATING_START = 79;
 const RATING_END = 93;
 const DEFAULT_FORRAGEM = {
-  79: 10,
-  80: 10,
-  81: 10,
+  79: 0,
+  80: 0,
+  81: 0,
   82: 10,
   83: 10,
   84: 10,
@@ -11,11 +11,11 @@ const DEFAULT_FORRAGEM = {
   86: 10,
   87: 10,
   88: 10,
-  89: 10,
-  90: 10,
-  91: 10,
-  92: 10,
-  93: 10
+  89: 0,
+  90: 0,
+  91: 0,
+  92: 0,
+  93: 0
 };
 
 const TOTAL_RATINGS = RATING_END - RATING_START + 1;
@@ -36,8 +36,31 @@ const DEFAULT_TOTW = {
   92: 0,
   93: 0
 };
+const STORAGE_KEY_FORRAGEM = "foddr_forragem";
+const STORAGE_KEY_TOTW = "foddr_forragem_totw";
 const forragemValues = Array(TOTAL_RATINGS).fill(0);
 const forragemTotwValues = Array(TOTAL_RATINGS).fill(0);
+
+const normalizeCounts = (counts) => {
+  const normalized = Array(TOTAL_RATINGS).fill(0);
+  if (!Array.isArray(counts)) return normalized;
+  counts.forEach((value, index) => {
+    if (index < normalized.length) {
+      normalized[index] = Number(value) || 0;
+    }
+  });
+  return normalized;
+};
+
+const loadStoredCounts = (key) => {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    return normalizeCounts(JSON.parse(raw));
+  } catch (err) {
+    return null;
+  }
+};
 
 Object.entries(DEFAULT_FORRAGEM).forEach(([rating, value]) => {
   const idx = Number(rating) - RATING_START;
@@ -52,6 +75,20 @@ Object.entries(DEFAULT_TOTW).forEach(([rating, value]) => {
     forragemTotwValues[idx] = value;
   }
 });
+
+const storedForragem = loadStoredCounts(STORAGE_KEY_FORRAGEM);
+if (storedForragem) {
+  storedForragem.forEach((value, index) => {
+    forragemValues[index] = value;
+  });
+}
+
+const storedTotw = loadStoredCounts(STORAGE_KEY_TOTW);
+if (storedTotw) {
+  storedTotw.forEach((value, index) => {
+    forragemTotwValues[index] = value;
+  });
+}
 
 const form = document.getElementById("sbcForm");
 const resultadoBox = document.getElementById("resultado");
@@ -76,17 +113,6 @@ const faltantesNegativo = document.getElementById("faltantesNegativo");
 const resultState = {
   currentIndex: 0,
   cards: []
-};
-
-const normalizeCounts = (counts) => {
-  const normalized = Array(TOTAL_RATINGS).fill(0);
-  if (!Array.isArray(counts)) return normalized;
-  counts.forEach((value, index) => {
-    if (index < normalized.length) {
-      normalized[index] = Number(value) || 0;
-    }
-  });
-  return normalized;
 };
 
 const setPartialAlertVisible = (visible) => {
@@ -523,6 +549,11 @@ const syncForragem = () => {
   if (hiddenForragem) {
     hiddenForragem.value = forragemValues.join(",");
   }
+  localStorage.setItem(STORAGE_KEY_FORRAGEM, JSON.stringify(forragemValues));
+};
+
+const syncForragemTotw = () => {
+  localStorage.setItem(STORAGE_KEY_TOTW, JSON.stringify(forragemTotwValues));
 };
 
 const setupGridControls = (gridElement, values, onChange) => {
@@ -563,7 +594,7 @@ const setupGridControls = (gridElement, values, onChange) => {
 };
 
 setupGridControls(ratingGrid, forragemValues, syncForragem);
-setupGridControls(totwGrid, forragemTotwValues);
+setupGridControls(totwGrid, forragemTotwValues, syncForragemTotw);
 
 const updateSquadMetadata = () => {
   const rows = Array.from(ovrContainer.querySelectorAll(".squad-row"));
