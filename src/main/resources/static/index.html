@@ -2,31 +2,38 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>FODDR | SBCs Solutions</title>
+  <title data-i18n="title.index">FODDR | SBCs Solutions</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="app-shell">
     <header class="app-header">
       <div class="brand">FODDR</div>
-      <nav class="nav-links">
-        <a href="index.html">Calculadora</a>
-        <a href="sbc.html">SBCs</a>
-        <a href="#">Criar conta</a>
-        <a href="#">Login</a>
-      </nav>
+      <div class="header-actions">
+        <nav class="nav-links">
+          <a href="index.html" data-i18n="nav.calculator">Calculadora</a>
+          <a href="sbc.html" data-i18n="nav.sbcs">SBCs</a>
+        </nav>
+        <div class="lang-switch">
+          <span data-i18n="lang.label">Idioma</span>
+          <select id="languageSelect" data-i18n-aria-label="lang.label">
+            <option value="pt-BR" data-i18n="lang.pt">Português</option>
+            <option value="en-US" data-i18n="lang.en">English</option>
+          </select>
+        </div>
+      </div>
     </header>
 
     <main class="app-main">
       <section class="sbc-panel">
-        <h1>SBCs Solutions</h1>
+        <h1 data-i18n="index.heading">Soluções SBCs</h1>
 
         <form id="sbcForm" class="sbc-form">
           <div class="squad-config">
             <div class="squad-labels">
-              <span>SQUADS:</span>
+              <span data-i18n="index.squads_label">ELENCOS:</span>
               <div class="squad-count">
-                <span>N°:</span>
+                <span data-i18n="index.number_label">N°:</span>
                 <input type="number" id="numElencos" class="pill-input" min="1" value="1" readonly>
               </div>
             </div>
@@ -41,8 +48,8 @@
           <div class="grid-wrapper">
             <div class="grid-heading">
               <div>
-                <h2>Forragem base</h2>
-                <p>Atualize a quantidade de cartas disponíveis em cada OVR.</p>
+                <h2 data-i18n="index.base_fodder_title">Forragem base</h2>
+                <p data-i18n="index.base_fodder_desc">Atualize a quantidade de cartas disponíveis em cada OVR.</p>
               </div>
             </div>
             <div class="rating-grid" id="ratingGrid">
@@ -142,10 +149,10 @@
           <div class="grid-wrapper grid-wrapper--totw">
             <div class="grid-heading">
               <div>
-                <h2>Forragem TOTW</h2>
-                <p>Opcionalmente informe cartas TOTW disponíveis.</p>
+                <h2 data-i18n="index.totw_fodder_title">Forragem TOTW</h2>
+                <p data-i18n="index.totw_fodder_desc">Opcionalmente informe cartas TOTW disponíveis.</p>
               </div>
-              <span class="grid-heading__badge">OPCIONAL</span>
+              <span class="grid-heading__badge" data-i18n="index.optional_badge">OPCIONAL</span>
             </div>
             <div class="rating-grid rating-grid--totw" id="totwGrid">
               <div class="rating-col" data-rating="79">
@@ -243,63 +250,63 @@
 
           <input type="hidden" id="forragem" value="">
 
-          <button type="submit" class="submit-button">Submit</button>
+          <button type="submit" class="submit-button" data-i18n="index.submit">Enviar</button>
         </form>
 
         <section class="results-section">
           <div class="results-header">
-            <h2>Resultados</h2>
-            <p id="resultado" class="results-status">Informe os dados e clique em Submit para ver os elencos.</p>
+            <h2 data-i18n="index.results_title">Resultados</h2>
+            <p id="resultado" class="results-status" data-i18n="index.results_prompt">Informe os dados e clique em Enviar para ver os elencos.</p>
           </div>
           <div class="results-shell">
-            <button type="button" id="resultPrev" class="result-nav" aria-label="Elenco anterior" disabled>&lsaquo;</button>
+            <button type="button" id="resultPrev" class="result-nav" data-i18n-aria-label="index.prev_squad" disabled>&lsaquo;</button>
             <div class="result-viewport">
               <div id="resultTrack" class="result-track"></div>
             </div>
-            <button type="button" id="resultNext" class="result-nav" aria-label="Próximo elenco" disabled>&rsaquo;</button>
+            <button type="button" id="resultNext" class="result-nav" data-i18n-aria-label="index.next_squad" disabled>&rsaquo;</button>
           </div>
           <div id="resultPagination" class="result-pagination"></div>
           <div class="result-totals">
-            <h3>Totais por OVR</h3>
+            <h3 data-i18n="index.totals_title">Totais por OVR</h3>
             <div id="resultTotals" class="totals-container">
-              <p class="totals-empty">Nenhum total calculado ainda.</p>
+              <p class="totals-empty" data-i18n="index.totals_empty">Nenhum total calculado ainda.</p>
             </div>
           </div>
 
           <div class="result-informs">
-            <h3>Informs usados</h3>
+            <h3 data-i18n="index.informs_title">Informs usados</h3>
             <div id="resultInforms" class="totals-container">
-              <p class="totals-empty">Nenhum Inform utilizado.</p>
+              <p class="totals-empty" data-i18n="index.informs_empty">Nenhum Inform utilizado.</p>
             </div>
           </div>
 
           <div id="partialAlert" class="partial-alert is-hidden">
-            <strong>Resultado parcial</strong>
-            <p>Não conseguimos completar todos os elencos. Veja abaixo as sugestões para montar o restante.</p>
+            <strong data-i18n="index.partial_title">Resultado parcial</strong>
+            <p data-i18n="index.partial_desc">Não conseguimos completar todos os elencos. Veja abaixo as sugestões para montar o restante.</p>
           </div>
 
           <div id="faltantesWrapper" class="faltantes-wrapper is-hidden">
             <div class="faltantes-header">
-              <h3>Próximos passos</h3>
-              <p>Utilize as combinações sugeridas para concluir os elencos pendentes.</p>
+              <h3 data-i18n="index.next_steps_title">Próximos passos</h3>
+              <p data-i18n="index.next_steps_desc">Utilize as combinações sugeridas para concluir os elencos pendentes.</p>
             </div>
             <div class="faltantes-grid">
               <div class="faltante-column">
-                <h4>Sugestões completas</h4>
+                <h4 data-i18n="index.suggestions_title">Sugestões completas</h4>
                 <div id="faltantesLista" class="faltante-list">
-                  <p class="totals-empty">Nenhum elenco pendente.</p>
+                  <p class="totals-empty" data-i18n="index.pending_empty">Nenhum elenco pendente.</p>
                 </div>
               </div>
               <div class="faltante-column">
-                <h4>Tenho</h4>
+                <h4 data-i18n="index.have_title">Tenho</h4>
                 <div id="faltantesPositivo" class="faltante-list">
-                  <p class="totals-empty">Nenhuma informação disponível.</p>
+                  <p class="totals-empty" data-i18n="index.no_info">Nenhuma informação disponível.</p>
                 </div>
               </div>
               <div class="faltante-column">
-                <h4>Falta</h4>
+                <h4 data-i18n="index.missing_title">Falta</h4>
                 <div id="faltantesNegativo" class="faltante-list">
-                  <p class="totals-empty">Nenhuma informação disponível.</p>
+                  <p class="totals-empty" data-i18n="index.no_info">Nenhuma informação disponível.</p>
                 </div>
               </div>
             </div>
@@ -309,6 +316,7 @@
     </main>
   </div>
 
+  <script src="i18n.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

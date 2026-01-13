@@ -170,7 +170,7 @@ const renderTotals = (totalCounts) => {
   if (!Array.isArray(totalCounts) || totalCounts.length === 0) {
     const empty = document.createElement("p");
     empty.className = "totals-empty";
-    empty.textContent = "Nenhum total calculado ainda.";
+    empty.textContent = t("common.totals_empty");
     resultTotals.appendChild(empty);
     return;
   }
@@ -188,7 +188,7 @@ const renderTotals = (totalCounts) => {
     item.className = "composition-item totals-item";
 
     const ratingSpan = document.createElement("span");
-    ratingSpan.textContent = `OVR ${rating}`;
+    ratingSpan.textContent = t("common.ovr_label", { rating });
 
     const countSpan = document.createElement("span");
     countSpan.textContent = formatPlayerCount(count);
@@ -200,7 +200,7 @@ const renderTotals = (totalCounts) => {
   if (!hasContent) {
     const empty = document.createElement("p");
     empty.className = "totals-empty";
-    empty.textContent = "Nenhum total calculado ainda.";
+    empty.textContent = t("common.totals_empty");
     resultTotals.appendChild(empty);
     return;
   }
@@ -215,7 +215,7 @@ const renderInformsSummary = (informsList) => {
   if (!Array.isArray(informsList) || informsList.length === 0) {
     const empty = document.createElement("p");
     empty.className = "totals-empty";
-    empty.textContent = "Nenhum Inform utilizado.";
+    empty.textContent = t("common.informs_empty");
     resultInforms.appendChild(empty);
     return;
   }
@@ -236,7 +236,7 @@ const renderInformsSummary = (informsList) => {
   if (!hasData) {
     const empty = document.createElement("p");
     empty.className = "totals-empty";
-    empty.textContent = "Nenhum Inform utilizado.";
+    empty.textContent = t("common.informs_empty");
     resultInforms.appendChild(empty);
     return;
   }
@@ -251,10 +251,12 @@ const renderInformsSummary = (informsList) => {
     item.className = "composition-item totals-item";
 
     const ratingSpan = document.createElement("span");
-    ratingSpan.textContent = `OVR ${rating}`;
+    ratingSpan.textContent = t("common.ovr_label", { rating });
 
     const countSpan = document.createElement("span");
-    countSpan.textContent = count === 1 ? "1 Inform" : `${count} Informs`;
+    countSpan.textContent = count === 1
+      ? t("common.inform_single")
+      : t("common.inform_multi", { count });
 
     item.append(ratingSpan, countSpan);
     list.appendChild(item);
@@ -278,7 +280,8 @@ resultNext.addEventListener("click", () => {
   goToPage(resultState.currentIndex + 1);
 });
 
-const formatPlayerCount = (value) => (value === 1 ? "1 jogador" : `${value} jogadores`);
+const formatPlayerCount = (value) =>
+  value === 1 ? t("common.player_single") : t("common.player_multi", { count: value });
 
 const buildCompositionList = (counts = []) => {
   const normalized = normalizeCounts(counts);
@@ -294,7 +297,7 @@ const buildCompositionList = (counts = []) => {
     item.className = "composition-item";
 
     const ratingSpan = document.createElement("span");
-    ratingSpan.textContent = `OVR ${rating}`;
+    ratingSpan.textContent = t("common.ovr_label", { rating });
 
     const countSpan = document.createElement("span");
     countSpan.textContent = formatPlayerCount(count);
@@ -306,7 +309,7 @@ const buildCompositionList = (counts = []) => {
   if (!hasContent) {
     const empty = document.createElement("div");
     empty.className = "composition-empty";
-    empty.textContent = "Nenhum jogador informado para este elenco.";
+    empty.textContent = t("common.no_player_for_squad");
     return empty;
   }
 
@@ -327,9 +330,11 @@ const buildInformsList = (counts = []) => {
     item.className = "composition-item";
 
     const ratingSpan = document.createElement("span");
-    ratingSpan.textContent = `OVR ${rating}`;
+    ratingSpan.textContent = t("common.ovr_label", { rating });
 
-    const countLabel = count === 1 ? "1 Inform" : `${count} Informs`;
+    const countLabel = count === 1
+      ? t("common.inform_single")
+      : t("common.inform_multi", { count });
     const countSpan = document.createElement("span");
     countSpan.textContent = countLabel;
 
@@ -340,7 +345,7 @@ const buildInformsList = (counts = []) => {
   if (!hasContent) {
     const empty = document.createElement("p");
     empty.className = "inform-empty";
-    empty.textContent = "Nenhum Inform utilizado.";
+    empty.textContent = t("common.informs_empty");
     return empty;
   }
 
@@ -357,13 +362,13 @@ const createInformBlock = (counts) => {
   block.className = "inform-block";
 
   const title = document.createElement("h4");
-  title.textContent = "Informs usados";
+  title.textContent = t("common.informs_title");
   block.appendChild(title);
 
   if (!hasInformUsage(counts)) {
     const empty = document.createElement("p");
     empty.className = "inform-empty";
-    empty.textContent = "Nenhum Inform utilizado.";
+    empty.textContent = t("common.informs_empty");
     block.appendChild(empty);
     return block;
   }
@@ -379,7 +384,7 @@ function renderFaltantesColumn(container, combos, labelPrefix) {
   if (!Array.isArray(combos) || combos.length === 0) {
     const empty = document.createElement("p");
     empty.className = "totals-empty";
-    empty.textContent = "Nenhum dado disponível.";
+    empty.textContent = t("common.no_data");
     container.appendChild(empty);
     return;
   }
@@ -414,9 +419,9 @@ function renderFaltantesSection(payload, shouldShow) {
     return;
   }
 
-  renderFaltantesColumn(faltantesLista, faltantes, "Sugestão");
-  renderFaltantesColumn(faltantesPositivo, positivos, "Tenho");
-  renderFaltantesColumn(faltantesNegativo, negativos, "Falta");
+  renderFaltantesColumn(faltantesLista, faltantes, t("common.suggestion_prefix"));
+  renderFaltantesColumn(faltantesPositivo, positivos, t("common.have_prefix"));
+  renderFaltantesColumn(faltantesNegativo, negativos, t("common.missing_prefix"));
 }
 
 const createResultCard = (counts, index, targetOvr, options = {}) => {
@@ -427,12 +432,12 @@ const createResultCard = (counts, index, targetOvr, options = {}) => {
   card.className = `result-card${isPending ? " result-card--pending" : ""}`;
 
   const title = document.createElement("h3");
-  title.textContent = `Elenco ${index + 1}`;
+  title.textContent = t("common.squad_label", { index: index + 1 });
   card.appendChild(title);
 
   const statusBadge = document.createElement("span");
   statusBadge.className = `result-status-badge ${isPending ? "is-warning" : "is-success"}`;
-  statusBadge.textContent = isPending ? "Pendente" : "Completo";
+  statusBadge.textContent = isPending ? t("common.status_pending") : t("common.status_complete");
   card.appendChild(statusBadge);
 
   const metaContainer = document.createElement("div");
@@ -456,11 +461,13 @@ const createResultCard = (counts, index, targetOvr, options = {}) => {
     return "--";
   })();
 
-  const ovrLabel = Number.isFinite(targetOvr) ? `OVR alvo ${targetOvr}` : `OVR médio ${average}`;
+  const ovrLabel = Number.isFinite(targetOvr)
+    ? t("common.target_ovr", { ovr: targetOvr })
+    : t("common.avg_ovr", { ovr: average });
   const metaItems = [
-    `${totalPlayers} jogadores`,
+    formatPlayerCount(totalPlayers),
     ovrLabel,
-    `Intervalo ${firstRating} - ${lastRating}`
+    t("common.range_label", { start: firstRating, end: lastRating })
   ];
 
   metaItems.forEach((label) => {
@@ -500,8 +507,8 @@ const renderSolutions = (payload, ovrs = []) => {
   })();
 
   if (elencos.length === 0) {
-    resultadoBox.textContent = "Nenhum elenco completo encontrado.";
-    showResultPlaceholder("Nenhum elenco foi retornado para os dados informados.");
+    resultadoBox.textContent = t("common.no_complete_squads");
+    showResultPlaceholder(t("common.no_squad_returned"));
     return;
   }
 
@@ -518,8 +525,8 @@ const renderSolutions = (payload, ovrs = []) => {
   const completedCount = elencos.filter((counts) => Array.isArray(counts)).length;
   const hasPending = completedCount !== elencos.length;
   resultadoBox.textContent = hasPending
-    ? `Resultado parcial: ${completedCount} de ${elencos.length} elenco(s) completos.`
-    : `Elencos completos encontrados: ${resultState.cards.length}`;
+    ? t("common.partial_summary", { completed: completedCount, total: elencos.length })
+    : t("common.complete_squads_found", { count: resultState.cards.length });
 
   updateNavigation();
   renderPagination();
@@ -543,7 +550,7 @@ const renderSolutions = (payload, ovrs = []) => {
   renderFaltantesSection(payload, hasPending);
 };
 
-showResultPlaceholder("Nenhum elenco carregado.");
+showResultPlaceholder(t("common.no_squad_loaded"));
 
 const syncForragem = () => {
   if (hiddenForragem) {
@@ -628,7 +635,7 @@ const createSquadRow = (ovr = 84, totw = 0) => {
   totwWrapper.className = "squad-row__totw";
 
   const totwLabel = document.createElement("span");
-  totwLabel.textContent = "Informs";
+  totwLabel.textContent = t("common.informs_label");
   totwWrapper.appendChild(totwLabel);
 
   const totwInput = document.createElement("input");
@@ -691,8 +698,8 @@ form.addEventListener("submit", async (e) => {
   });
 
   if (hasInvalid || elencosPayload.length === 0) {
-    resultadoBox.textContent = "Erro: informe o OVR de cada squad.";
-    showResultPlaceholder("Preencha todos os OVRs antes de continuar.");
+    resultadoBox.textContent = t("common.error_ovr_required");
+    showResultPlaceholder(t("common.error_fill_ovr"));
     return;
   }
 
@@ -702,8 +709,8 @@ form.addEventListener("submit", async (e) => {
     forragemTotw: [...forragemTotwValues]
   };
 
-  resultadoBox.textContent = "Carregando...";
-  showResultPlaceholder("Buscando elencos...");
+  resultadoBox.textContent = t("common.loading");
+  showResultPlaceholder(t("common.loading_squads"));
 
   try {
     const response = await fetch("https://foddr.onrender.com/sbc/encontrar", {
@@ -712,11 +719,11 @@ form.addEventListener("submit", async (e) => {
       body: JSON.stringify(data)
     });
 
-    if (!response.ok) throw new Error("Erro na requisição");
+    if (!response.ok) throw new Error(t("common.error_request"));
     const resultado = await response.json();
     renderSolutions(resultado, ovrs);
   } catch (err) {
-    resultadoBox.textContent = "Erro: " + err.message;
-    showResultPlaceholder("Não foi possível carregar os elencos.");
+    resultadoBox.textContent = t("common.error_message", { message: err.message });
+    showResultPlaceholder(t("common.error_loading_squads"));
   }
 });

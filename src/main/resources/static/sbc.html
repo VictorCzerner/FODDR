@@ -2,48 +2,57 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>FODDR | Catálogo de SBCs</title>
+  <title data-i18n="title.sbc">FODDR | Catálogo de SBCs</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="app-shell">
     <header class="app-header">
       <div class="brand">FODDR</div>
-      <nav class="nav-links">
-        <a href="index.html">Calculadora</a>
-        <a href="sbc.html">SBCs</a>
-        <a href="#">Criar conta</a>
-        <a href="#">Login</a>
-      </nav>
+      <div class="header-actions">
+        <nav class="nav-links">
+          <a href="index.html" data-i18n="nav.calculator">Calculadora</a>
+          <a href="sbc.html" data-i18n="nav.sbcs">SBCs</a>
+        </nav>
+        <div class="lang-switch">
+          <span data-i18n="lang.label">Idioma</span>
+          <select id="languageSelect" data-i18n-aria-label="lang.label">
+            <option value="pt-BR" data-i18n="lang.pt">Português</option>
+            <option value="en-US" data-i18n="lang.en">English</option>
+          </select>
+        </div>
+      </div>
     </header>
 
     <main class="app-main">
       <section class="sbc-panel sbc-catalog">
         <div class="catalog-header">
           <div>
-            <p class="catalog-eyebrow">Squad Building Challenges</p>
-            <h1>Catálogo de SBCs</h1>
-            <p>Explore as categorias disponíveis e encontre os desafios ativos.</p>
+            <p class="catalog-eyebrow" data-i18n="sbc.eyebrow">Squad Building Challenges</p>
+            <h1 data-i18n="sbc.heading">Catálogo de SBCs</h1>
+            <p data-i18n="sbc.subtitle">Explore as categorias disponíveis e encontre os desafios ativos.</p>
           </div>
           <button type="button" id="reloadCategorias" class="catalog-refresh">
-            Atualizar
+            <span data-i18n="sbc.refresh">Atualizar</span>
           </button>
         </div>
 
-        <div class="catalog-tabs" id="tabs" role="tablist" aria-label="Categorias de SBC"></div>
+        <div class="catalog-tabs" id="tabs" role="tablist" data-i18n-aria-label="sbc.tabs_label"></div>
 
         <div class="catalog-content" id="content">
-          <div class="catalog-empty catalog-empty--loading">Carregando SBCs…</div>
+          <div class="catalog-empty catalog-empty--loading" data-i18n="sbc.loading">Carregando SBCs…</div>
         </div>
       </section>
     </main>
   </div>
 
+  <script src="i18n.js"></script>
   <script>
     const API_CATEGORIES = "/api/sbc/categories";
     const tabsContainer = document.getElementById("tabs");
     const contentContainer = document.getElementById("content");
     const reloadBtn = document.getElementById("reloadCategorias");
+    const reloadLabel = reloadBtn ? reloadBtn.querySelector("[data-i18n]") || reloadBtn : null;
 
     const state = {
       categorias: [],
@@ -53,7 +62,9 @@
     const setRefreshLoading = (loading) => {
       if (!reloadBtn) return;
       reloadBtn.disabled = loading;
-      reloadBtn.textContent = loading ? "Atualizando..." : "Atualizar";
+      if (reloadLabel) {
+        reloadLabel.textContent = loading ? t("sbc.refresh_loading") : t("sbc.refresh");
+      }
     };
 
     const showStatusMessage = (message, variant = "muted") => {
@@ -69,10 +80,11 @@
     };
 
     const formatExpireDate = (timestamp) => {
-      if (!timestamp) return "Sem data";
+      if (!timestamp) return t("sbc.card_no_date");
       const date = new Date(timestamp * 1000);
-      if (Number.isNaN(date.getTime())) return "Sem data";
-      return date.toLocaleDateString("pt-BR", {
+      if (Number.isNaN(date.getTime())) return t("sbc.card_no_date");
+      const locale = getCurrentLocale() || "pt-BR";
+      return date.toLocaleDateString(locale, {
         day: "2-digit",
         month: "short",
         hour: "2-digit",
@@ -102,24 +114,26 @@
       card.setAttribute("role", "button");
       card.setAttribute("tabindex", "0");
 
-      const label = set.name || set.setId ? `Abrir detalhes do set ${set.name || set.setId}` : "Abrir detalhes do set";
+      const label = set.name || set.setId
+        ? t("sbc.card_open_named", { name: set.name || set.setId })
+        : t("sbc.card_open");
       card.setAttribute("aria-label", label);
 
       const title = document.createElement("h3");
       title.className = "catalog-card__title";
-      title.textContent = set.name || "Set sem nome";
+      title.textContent = set.name || t("sbc.card_untitled");
       card.appendChild(title);
 
       const metaList = document.createElement("ul");
       metaList.className = "catalog-card__meta";
-      metaList.appendChild(createMetaRow("Set ID", set.setId ?? "—"));
-      metaList.appendChild(createMetaRow("Expira em", formatExpireDate(set.expiresAt)));
+      metaList.appendChild(createMetaRow(t("sbc.card_set_id"), set.setId ?? "—"));
+      metaList.appendChild(createMetaRow(t("sbc.card_expires"), formatExpireDate(set.expiresAt)));
       card.appendChild(metaList);
 
       const action = document.createElement("div");
       action.className = "catalog-card__action";
       const actionText = document.createElement("span");
-      actionText.textContent = "Ver detalhes";
+      actionText.textContent = t("sbc.card_view_details");
       const actionIcon = document.createElement("span");
       actionIcon.setAttribute("aria-hidden", "true");
       actionIcon.textContent = "→";
@@ -142,7 +156,7 @@
 
     async function carregarCategorias() {
       setRefreshLoading(true);
-      showStatusMessage("Carregando SBCs…", "loading");
+      showStatusMessage(t("sbc.loading"), "loading");
 
       try {
         const response = await fetch(API_CATEGORIES, {
@@ -150,14 +164,14 @@
         });
 
         if (!response.ok) {
-          throw new Error(`Erro ${response.status}`);
+          throw new Error(t("common.error_response", { status: response.status }));
         }
 
         const data = await response.json();
 
         if (!Array.isArray(data) || data.length === 0) {
           tabsContainer.innerHTML = "";
-          showStatusMessage("Nenhuma categoria encontrada no momento.", "muted");
+          showStatusMessage(t("sbc.no_categories"), "muted");
           return;
         }
 
@@ -165,7 +179,7 @@
       } catch (error) {
         console.error("Erro ao carregar SBCs:", error);
         tabsContainer.innerHTML = "";
-        showStatusMessage("Não foi possível carregar os SBCs agora. Tente novamente mais tarde.", "error");
+        showStatusMessage(t("sbc.load_error"), "error");
       } finally {
         setRefreshLoading(false);
       }
@@ -182,7 +196,7 @@
         const tab = document.createElement("button");
         tab.type = "button";
         tab.className = `catalog-tab${index === 0 ? " is-active" : ""}`;
-        tab.textContent = categoria.category || `Categoria ${index + 1}`;
+        tab.textContent = categoria.category || t("sbc.category_label", { index: index + 1 });
         tab.setAttribute("role", "tab");
         tab.setAttribute("aria-selected", index === 0 ? "true" : "false");
         tab.id = `catalog-tab-${index}`;
@@ -202,7 +216,7 @@
         if (sets.length === 0) {
           const empty = document.createElement("div");
           empty.className = "catalog-empty catalog-empty--muted";
-          empty.textContent = "Nenhum set disponível nesta categoria.";
+          empty.textContent = t("sbc.no_sets_in_category");
           panel.appendChild(empty);
         } else {
           const grid = document.createElement("div");

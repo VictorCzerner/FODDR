@@ -2,54 +2,61 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>FODDR | Detalhes do Set</title>
+  <title data-i18n="title.sbc_set">FODDR | Detalhes do Set</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="app-shell">
     <header class="app-header">
       <div class="brand">FODDR</div>
-      <nav class="nav-links">
-        <a href="index.html">Calculadora</a>
-        <a href="sbc.html">SBCs</a>
-        <a href="#">Criar conta</a>
-        <a href="#">Login</a>
-      </nav>
+      <div class="header-actions">
+        <nav class="nav-links">
+          <a href="index.html" data-i18n="nav.calculator">Calculadora</a>
+          <a href="sbc.html" data-i18n="nav.sbcs">SBCs</a>
+        </nav>
+        <div class="lang-switch">
+          <span data-i18n="lang.label">Idioma</span>
+          <select id="languageSelect" data-i18n-aria-label="lang.label">
+            <option value="pt-BR" data-i18n="lang.pt">Português</option>
+            <option value="en-US" data-i18n="lang.en">English</option>
+          </select>
+        </div>
+      </div>
     </header>
 
     <main class="app-main">
       <section class="sbc-panel sbc-set-detail">
         <div class="catalog-header set-detail__header">
           <div>
-            <p class="catalog-eyebrow">Squad Building Challenges</p>
-            <h1 id="setTitle">Detalhes do set</h1>
-            <p id="setSubtitle" class="set-detail__subtitle">Carregando informações…</p>
+            <p class="catalog-eyebrow" data-i18n="sbc.eyebrow">Squad Building Challenges</p>
+            <h1 id="setTitle" data-i18n="set.heading">Detalhes do set</h1>
+            <p id="setSubtitle" class="set-detail__subtitle" data-i18n="set.subtitle_loading">Carregando informações…</p>
           </div>
           <div class="set-detail__actions">
-            <a href="sbc.html" class="catalog-refresh set-detail__back">← Voltar ao catálogo</a>
+            <a href="sbc.html" class="catalog-refresh set-detail__back" data-i18n="set.back_catalog">← Voltar ao catálogo</a>
           </div>
         </div>
 
         <div class="set-detail__meta" id="setMeta"></div>
 
         <div class="catalog-content" id="setContent">
-          <div class="catalog-empty catalog-empty--loading">Carregando detalhes do set…</div>
+          <div class="catalog-empty catalog-empty--loading" data-i18n="set.loading_details">Carregando detalhes do set…</div>
         </div>
 
         <section class="set-resolver" id="setResolverSection">
           <div class="set-resolver__header">
             <div>
-              <h2>Resolver este set</h2>
-              <p>Informe sua forragem disponível e resolva automaticamente os desafios deste set.</p>
+              <h2 data-i18n="set.resolve_title">Resolver este set</h2>
+              <p data-i18n="set.resolve_desc">Informe sua forragem disponível e resolva automaticamente os desafios deste set.</p>
             </div>
-            <button type="button" id="resolverSetBtn" class="submit-button">Resolver set</button>
+            <button type="button" id="resolverSetBtn" class="submit-button" data-i18n="set.resolve_button">Resolver set</button>
           </div>
 
           <div class="grid-wrapper">
             <div class="grid-heading">
               <div>
-                <h3>Forragem base</h3>
-                <p>Atualize a quantidade de cartas disponíveis em cada OVR.</p>
+                <h3 data-i18n="index.base_fodder_title">Forragem base</h3>
+                <p data-i18n="index.base_fodder_desc">Atualize a quantidade de cartas disponíveis em cada OVR.</p>
               </div>
             </div>
             <div class="rating-grid" id="setRatingGrid"></div>
@@ -58,75 +65,75 @@
           <div class="grid-wrapper grid-wrapper--totw">
             <div class="grid-heading">
               <div>
-                <h3>Forragem TOTW</h3>
-                <p>Opcionalmente informe cartas TOTW disponíveis.</p>
+                <h3 data-i18n="index.totw_fodder_title">Forragem TOTW</h3>
+                <p data-i18n="index.totw_fodder_desc">Opcionalmente informe cartas TOTW disponíveis.</p>
               </div>
-              <span class="grid-heading__badge">OPCIONAL</span>
+              <span class="grid-heading__badge" data-i18n="common.optional">OPCIONAL</span>
             </div>
             <div class="rating-grid rating-grid--totw" id="setTotwGrid"></div>
           </div>
 
           <div class="resolver-status" id="resolverStatus">
-            Informe a forragem e clique em "Resolver set".
+            <span data-i18n="set.status_default">Informe a forragem e clique em "Resolver set".</span>
           </div>
         </section>
 
         <section class="results-section set-results">
           <div class="results-header">
-            <h2>Resultados</h2>
+            <h2 data-i18n="common.results_title">Resultados</h2>
             <p id="resolverResultado" class="results-status">
-              Informe a forragem acima e clique em "Resolver set" para ver as soluções.
+              <span data-i18n="set.results_prompt">Informe a forragem acima e clique em "Resolver set" para ver as soluções.</span>
             </p>
           </div>
           <div class="results-shell">
-            <button type="button" id="resultPrev" class="result-nav" aria-label="Elenco anterior" disabled>&lsaquo;</button>
+            <button type="button" id="resultPrev" class="result-nav" data-i18n-aria-label="index.prev_squad" disabled>&lsaquo;</button>
             <div class="result-viewport">
               <div id="resultTrack" class="result-track"></div>
             </div>
-            <button type="button" id="resultNext" class="result-nav" aria-label="Próximo elenco" disabled>&rsaquo;</button>
+            <button type="button" id="resultNext" class="result-nav" data-i18n-aria-label="index.next_squad" disabled>&rsaquo;</button>
           </div>
           <div id="resultPagination" class="result-pagination"></div>
           <div class="result-totals">
-            <h3>Totais por OVR</h3>
+            <h3 data-i18n="common.totals_title">Totais por OVR</h3>
             <div id="resultTotals" class="totals-container">
-              <p class="totals-empty">Nenhum total calculado ainda.</p>
+              <p class="totals-empty" data-i18n="common.totals_empty">Nenhum total calculado ainda.</p>
             </div>
           </div>
 
           <div class="result-informs">
-            <h3>Informs usados</h3>
+            <h3 data-i18n="common.informs_title">Informs usados</h3>
             <div id="resultInforms" class="totals-container">
-              <p class="totals-empty">Nenhum Inform utilizado.</p>
+              <p class="totals-empty" data-i18n="common.informs_empty">Nenhum Inform utilizado.</p>
             </div>
           </div>
 
           <div id="partialAlert" class="partial-alert is-hidden">
-            <strong>Resultado parcial</strong>
-            <p>Não conseguimos completar todos os elencos. Veja abaixo as sugestões para montar o restante.</p>
+            <strong data-i18n="common.partial_title">Resultado parcial</strong>
+            <p data-i18n="common.partial_desc">Não conseguimos completar todos os elencos. Veja abaixo as sugestões para montar o restante.</p>
           </div>
 
           <div id="faltantesWrapper" class="faltantes-wrapper is-hidden">
             <div class="faltantes-header">
-              <h3>Próximos passos</h3>
-              <p>Utilize as combinações sugeridas para concluir os elencos pendentes.</p>
+              <h3 data-i18n="common.next_steps_title">Próximos passos</h3>
+              <p data-i18n="common.next_steps_desc">Utilize as combinações sugeridas para concluir os elencos pendentes.</p>
             </div>
             <div class="faltantes-grid">
               <div class="faltante-column">
-                <h4>Sugestões completas</h4>
+                <h4 data-i18n="common.suggestions_title">Sugestões completas</h4>
                 <div id="faltantesLista" class="faltante-list">
-                  <p class="totals-empty">Nenhum elenco pendente.</p>
+                  <p class="totals-empty" data-i18n="common.pending_empty">Nenhum elenco pendente.</p>
                 </div>
               </div>
               <div class="faltante-column">
-                <h4>Tenho</h4>
+                <h4 data-i18n="common.have_title">Tenho</h4>
                 <div id="faltantesPositivo" class="faltante-list">
-                  <p class="totals-empty">Nenhuma informação disponível.</p>
+                  <p class="totals-empty" data-i18n="common.no_info">Nenhuma informação disponível.</p>
                 </div>
               </div>
               <div class="faltante-column">
-                <h4>Falta</h4>
+                <h4 data-i18n="common.missing_title">Falta</h4>
                 <div id="faltantesNegativo" class="faltante-list">
-                  <p class="totals-empty">Nenhuma informação disponível.</p>
+                  <p class="totals-empty" data-i18n="common.no_info">Nenhuma informação disponível.</p>
                 </div>
               </div>
             </div>
@@ -136,6 +143,7 @@
     </main>
   </div>
 
+  <script src="i18n.js"></script>
   <script>
     const params = new URLSearchParams(window.location.search);
     const setId = params.get("setId");
@@ -233,7 +241,8 @@
       localStorage.setItem(key, JSON.stringify(counts));
     };
 
-    const formatPlayerCount = (value) => (value === 1 ? "1 jogador" : `${value} jogadores`);
+    const formatPlayerCount = (value) =>
+      value === 1 ? t("common.player_single") : t("common.player_multi", { count: value });
 
     const setPartialAlertVisible = (visible) => {
       if (!partialAlert) return;
@@ -292,7 +301,7 @@
       if (!Array.isArray(totalCounts) || totalCounts.length === 0) {
         const empty = document.createElement("p");
         empty.className = "totals-empty";
-        empty.textContent = "Nenhum total calculado ainda.";
+        empty.textContent = t("common.totals_empty");
         resultTotals.appendChild(empty);
         return;
       }
@@ -310,7 +319,7 @@
         item.className = "composition-item totals-item";
 
         const ratingSpan = document.createElement("span");
-        ratingSpan.textContent = `OVR ${rating}`;
+        ratingSpan.textContent = t("common.ovr_label", { rating });
 
         const countSpan = document.createElement("span");
         countSpan.textContent = formatPlayerCount(count);
@@ -322,7 +331,7 @@
       if (!hasContent) {
         const empty = document.createElement("p");
         empty.className = "totals-empty";
-        empty.textContent = "Nenhum total calculado ainda.";
+        empty.textContent = t("common.totals_empty");
         resultTotals.appendChild(empty);
         return;
       }
@@ -337,7 +346,7 @@
       if (!Array.isArray(informsList) || informsList.length === 0) {
         const empty = document.createElement("p");
         empty.className = "totals-empty";
-        empty.textContent = "Nenhum Inform utilizado.";
+        empty.textContent = t("common.informs_empty");
         resultInforms.appendChild(empty);
         return;
       }
@@ -358,7 +367,7 @@
       if (!hasData) {
         const empty = document.createElement("p");
         empty.className = "totals-empty";
-        empty.textContent = "Nenhum Inform utilizado.";
+        empty.textContent = t("common.informs_empty");
         resultInforms.appendChild(empty);
         return;
       }
@@ -373,10 +382,12 @@
         item.className = "composition-item totals-item";
 
         const ratingSpan = document.createElement("span");
-        ratingSpan.textContent = `OVR ${rating}`;
+        ratingSpan.textContent = t("common.ovr_label", { rating });
 
         const countSpan = document.createElement("span");
-        countSpan.textContent = count === 1 ? "1 Inform" : `${count} Informs`;
+        countSpan.textContent = count === 1
+          ? t("common.inform_single")
+          : t("common.inform_multi", { count });
 
         item.append(ratingSpan, countSpan);
         list.appendChild(item);
@@ -399,7 +410,7 @@
         item.className = "composition-item";
 
         const ratingSpan = document.createElement("span");
-        ratingSpan.textContent = `OVR ${rating}`;
+        ratingSpan.textContent = t("common.ovr_label", { rating });
 
         const countSpan = document.createElement("span");
         countSpan.textContent = formatPlayerCount(count);
@@ -411,7 +422,7 @@
       if (!hasContent) {
         const empty = document.createElement("div");
         empty.className = "composition-empty";
-        empty.textContent = "Nenhum jogador informado para este elenco.";
+        empty.textContent = t("common.no_player_for_squad");
         return empty;
       }
 
@@ -437,9 +448,11 @@
         item.className = "composition-item";
 
         const ratingSpan = document.createElement("span");
-        ratingSpan.textContent = `OVR ${rating}`;
+        ratingSpan.textContent = t("common.ovr_label", { rating });
 
-        const countLabel = count === 1 ? "1 Inform" : `${count} Informs`;
+        const countLabel = count === 1
+          ? t("common.inform_single")
+          : t("common.inform_multi", { count });
         const countSpan = document.createElement("span");
         countSpan.textContent = countLabel;
 
@@ -450,7 +463,7 @@
       if (!hasContent) {
         const empty = document.createElement("p");
         empty.className = "inform-empty";
-        empty.textContent = "Nenhum Inform utilizado.";
+        empty.textContent = t("common.informs_empty");
         return empty;
       }
 
@@ -462,13 +475,13 @@
       block.className = "inform-block";
 
       const title = document.createElement("h4");
-      title.textContent = "Informs usados";
+      title.textContent = t("common.informs_title");
       block.appendChild(title);
 
       if (!hasInformUsage(counts)) {
         const empty = document.createElement("p");
         empty.className = "inform-empty";
-        empty.textContent = "Nenhum Inform utilizado.";
+        empty.textContent = t("common.informs_empty");
         block.appendChild(empty);
         return block;
       }
@@ -484,7 +497,7 @@
       if (!Array.isArray(combos) || combos.length === 0) {
         const empty = document.createElement("p");
         empty.className = "totals-empty";
-        empty.textContent = "Nenhum dado disponível.";
+        empty.textContent = t("common.no_data");
         container.appendChild(empty);
         return;
       }
@@ -519,9 +532,9 @@
         return;
       }
 
-      renderFaltantesColumn(faltantesLista, faltantes, "Sugestão");
-      renderFaltantesColumn(faltantesPositivo, positivos, "Tenho");
-      renderFaltantesColumn(faltantesNegativo, negativos, "Falta");
+      renderFaltantesColumn(faltantesLista, faltantes, t("common.suggestion_prefix"));
+      renderFaltantesColumn(faltantesPositivo, positivos, t("common.have_prefix"));
+      renderFaltantesColumn(faltantesNegativo, negativos, t("common.missing_prefix"));
     };
 
     const createResultCard = (counts, index, targetOvr, options = {}) => {
@@ -532,12 +545,12 @@
       card.className = `result-card${isPending ? " result-card--pending" : ""}`;
 
       const title = document.createElement("h3");
-      title.textContent = `Elenco ${index + 1}`;
+      title.textContent = t("common.squad_label", { index: index + 1 });
       card.appendChild(title);
 
       const statusBadge = document.createElement("span");
       statusBadge.className = `result-status-badge ${isPending ? "is-warning" : "is-success"}`;
-      statusBadge.textContent = isPending ? "Pendente" : "Completo";
+      statusBadge.textContent = isPending ? t("common.status_pending") : t("common.status_complete");
       card.appendChild(statusBadge);
 
       const metaContainer = document.createElement("div");
@@ -561,11 +574,13 @@
         return "--";
       })();
 
-      const targetLabel = Number.isFinite(targetOvr) ? `OVR alvo ${targetOvr}` : `OVR médio ${average}`;
+      const targetLabel = Number.isFinite(targetOvr)
+        ? t("common.target_ovr", { ovr: targetOvr })
+        : t("common.avg_ovr", { ovr: average });
       const metaItems = [
-        `${totalPlayers} jogadores`,
+        formatPlayerCount(totalPlayers),
         targetLabel,
-        `Intervalo ${firstRating} - ${lastRating}`
+        t("common.range_label", { start: firstRating, end: lastRating })
       ];
 
       metaItems.forEach((label) => {
@@ -606,8 +621,8 @@
       })();
 
       if (elencos.length === 0) {
-        resultadoBox.textContent = "Nenhum elenco completo encontrado.";
-        showResultPlaceholder("Nenhum elenco foi retornado para os dados informados.");
+        resultadoBox.textContent = t("common.no_complete_squads");
+        showResultPlaceholder(t("common.no_squad_returned"));
         return;
       }
 
@@ -624,8 +639,8 @@
       const completedCount = elencos.filter((counts) => Array.isArray(counts)).length;
       const hasPending = completedCount !== elencos.length;
       resultadoBox.textContent = hasPending
-        ? `Resultado parcial: ${completedCount} de ${elencos.length} elenco(s) completos.`
-        : `Elencos completos encontrados: ${resultState.cards.length}`;
+        ? t("common.partial_summary", { completed: completedCount, total: elencos.length })
+        : t("common.complete_squads_found", { count: resultState.cards.length });
 
       updateNavigation();
       renderPagination();
@@ -675,10 +690,11 @@
     };
 
     const formatDate = (timestamp) => {
-      if (!timestamp) return "Sem data";
+      if (!timestamp) return t("sbc.card_no_date");
       const date = new Date(Number(timestamp) * 1000);
-      if (Number.isNaN(date.getTime())) return "Sem data";
-      return date.toLocaleDateString("pt-BR", {
+      if (Number.isNaN(date.getTime())) return t("sbc.card_no_date");
+      const locale = getCurrentLocale() || "pt-BR";
+      return date.toLocaleDateString(locale, {
         day: "2-digit",
         month: "short",
         hour: "2-digit",
@@ -813,15 +829,15 @@
     const resolverSet = async () => {
       if (!resolverBtn) return;
       if (!setId) {
-        updateResolverStatus("Set não informado.", "error");
+        updateResolverStatus(t("set.not_informed"), "error");
         return;
       }
 
       try {
         resolverBtn.disabled = true;
-        updateResolverStatus("Resolvendo set…", "loading");
-        if (resultadoBox) resultadoBox.textContent = "Carregando...";
-        showResultPlaceholder("Buscando elencos...");
+        updateResolverStatus(t("set.resolving"), "loading");
+        if (resultadoBox) resultadoBox.textContent = t("common.loading");
+        showResultPlaceholder(t("common.loading_squads"));
 
         const response = await fetch(`${API_SETS}/${encodeURIComponent(setId)}/resolver`, {
           method: "POST",
@@ -836,20 +852,20 @@
         });
 
         if (!response.ok) {
-          throw new Error(`Erro ${response.status}`);
+          throw new Error(t("common.error_response", { status: response.status }));
         }
 
         const data = await response.json();
         renderSolutions(data, extractTargetOvrs(data));
         const totalElencos = Array.isArray(data?.elencosCompletos) ? data.elencosCompletos.length : 0;
-        updateResolverStatus(`Set resolvido! ${totalElencos} elenco(s) encontrados.`, "success");
+        updateResolverStatus(t("set.resolved", { count: totalElencos }), "success");
       } catch (error) {
         console.error("Erro ao resolver set:", error);
-        updateResolverStatus("Não foi possível resolver o set agora. Tente novamente.", "error");
+        updateResolverStatus(t("set.resolve_error_retry"), "error");
         if (resultadoBox) {
-          resultadoBox.textContent = "Erro ao carregar elencos.";
+          resultadoBox.textContent = t("set.error_loading_squads");
         }
-        showResultPlaceholder("Não foi possível carregar os elencos.");
+        showResultPlaceholder(t("common.error_loading_squads"));
       } finally {
         if (resolverBtn) {
           resolverBtn.disabled = false;
@@ -875,15 +891,15 @@
 
     const renderMeta = (set) => {
       metaEl.innerHTML = "";
-      metaEl.appendChild(createMetaBadge("Set ID", set.setId ?? "—"));
-      metaEl.appendChild(createMetaBadge("Categoria", set.categoryName || "Não informada"));
-      metaEl.appendChild(createMetaBadge("Expira em", formatDate(set.expiresAt)));
+      metaEl.appendChild(createMetaBadge(t("set.meta_set_id"), set.setId ?? "—"));
+      metaEl.appendChild(createMetaBadge(t("set.meta_category"), set.categoryName || t("set.meta_category_unknown")));
+      metaEl.appendChild(createMetaBadge(t("set.meta_expires"), formatDate(set.expiresAt)));
     };
 
     const renderRequirements = (requirements = []) => {
       if (!requirements.length) {
         const emptyReq = document.createElement("li");
-        emptyReq.textContent = "Sem requisitos informados.";
+        emptyReq.textContent = t("set.requirements_none");
         return [emptyReq];
       }
 
@@ -893,26 +909,26 @@
 
         const header = document.createElement("div");
         header.className = "set-requirement__header";
-        header.textContent = req.type || "Requisito";
+        header.textContent = req.type || t("set.requirement_label");
 
         const details = document.createElement("div");
         details.className = "set-requirement__details";
 
         const parts = [];
         if (req.eligibilityValue != null) {
-          parts.push(`Valor: ${req.eligibilityValue}`);
+          parts.push(t("set.requirement_value", { value: req.eligibilityValue }));
         }
         if (req.nationId != null) {
-          parts.push(`Nação #${req.nationId}`);
+          parts.push(t("set.requirement_nation", { id: req.nationId }));
         }
         if (req.leagueId != null) {
-          parts.push(`Liga #${req.leagueId}`);
+          parts.push(t("set.requirement_league", { id: req.leagueId }));
         }
         if (req.clubId != null) {
-          parts.push(`Clube #${req.clubId}`);
+          parts.push(t("set.requirement_club", { id: req.clubId }));
         }
 
-        details.textContent = parts.length ? parts.join(" · ") : "Sem detalhes adicionais";
+        details.textContent = parts.length ? parts.join(" · ") : t("set.requirement_no_details");
 
         item.append(header, details);
         return item;
@@ -928,11 +944,11 @@
 
       const title = document.createElement("h3");
       title.className = "catalog-card__title";
-      title.textContent = challenge.name || `Desafio ${challenge.challengeId}`;
+      title.textContent = challenge.name || t("set.challenge", { id: challenge.challengeId });
 
       const repeatable = document.createElement("span");
       repeatable.className = `challenge-card__tag ${challenge.repeatable ? "is-repeatable" : ""}`;
-      repeatable.textContent = challenge.repeatable ? "Repetível" : "Único";
+      repeatable.textContent = challenge.repeatable ? t("set.challenge_repeatable") : t("set.challenge_single");
 
       header.append(title, repeatable);
       card.appendChild(header);
@@ -942,11 +958,11 @@
 
       const formationRow = document.createElement("li");
       formationRow.className = "catalog-card__meta-item";
-      formationRow.innerHTML = `<span class="catalog-card__meta-label">Formação</span><span class="catalog-card__meta-value">${challenge.formation || "—"}</span>`;
+      formationRow.innerHTML = `<span class="catalog-card__meta-label">${t("set.meta_formation")}</span><span class="catalog-card__meta-value">${challenge.formation || "—"}</span>`;
 
       const expiresRow = document.createElement("li");
       expiresRow.className = "catalog-card__meta-item";
-      expiresRow.innerHTML = `<span class="catalog-card__meta-label">Expira em</span><span class="catalog-card__meta-value">${formatDate(challenge.expiresAt)}</span>`;
+      expiresRow.innerHTML = `<span class="catalog-card__meta-label">${t("set.meta_expires")}</span><span class="catalog-card__meta-value">${formatDate(challenge.expiresAt)}</span>`;
 
       meta.append(formationRow, expiresRow);
       card.appendChild(meta);
@@ -962,7 +978,7 @@
     const renderChallenges = (challenges = []) => {
       contentEl.innerHTML = "";
       if (!challenges.length) {
-        showMessage("Nenhum desafio encontrado para este set.", "muted");
+        showMessage(t("set.no_challenges"), "muted");
         return;
       }
 
@@ -973,20 +989,22 @@
     };
 
     const renderSet = (set) => {
-      titleEl.textContent = set.name || "Set sem nome";
-      subtitleEl.textContent = set.categoryName ? `Categoria: ${set.categoryName}` : "Categoria não informada.";
+      titleEl.textContent = set.name || t("set.untitled");
+      subtitleEl.textContent = set.categoryName
+        ? t("set.category_label", { name: set.categoryName })
+        : t("set.category_unknown_detail");
       renderMeta(set);
       renderChallenges(set.challenges);
     };
 
     const carregarSet = async () => {
       if (!setId) {
-        showMessage("Set não informado. Volte ao catálogo e selecione um set.", "error");
-        subtitleEl.textContent = "ID do set ausente.";
+        showMessage(t("set.not_informed_detail"), "error");
+        subtitleEl.textContent = t("set.id_missing");
         return;
       }
 
-      showMessage("Carregando detalhes do set…", "loading");
+      showMessage(t("set.loading_details"), "loading");
 
       try {
         const response = await fetch(`${API_SETS}/${encodeURIComponent(setId)}`, {
@@ -994,15 +1012,15 @@
         });
 
         if (!response.ok) {
-          throw new Error(`Erro ${response.status}`);
+          throw new Error(t("common.error_response", { status: response.status }));
         }
 
         const data = await response.json();
         renderSet(data);
       } catch (error) {
         console.error("Erro ao carregar set:", error);
-        showMessage("Não foi possível carregar os detalhes agora. Tente novamente mais tarde.", "error");
-        subtitleEl.textContent = "Erro ao carregar dados.";
+        showMessage(t("set.load_details_error"), "error");
+        subtitleEl.textContent = t("set.error_loading_data");
       }
     };
 
@@ -1031,7 +1049,7 @@
       }
     };
 
-    showResultPlaceholder("Nenhum elenco carregado.");
+    showResultPlaceholder(t("common.no_squad_loaded"));
     inicializarResolver();
     carregarSet();
   </script>
