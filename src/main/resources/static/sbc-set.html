@@ -177,6 +177,8 @@
       92: 0,
       93: 0
     };
+    const STORAGE_KEY_FORRAGEM = "foddr_forragem";
+    const STORAGE_KEY_TOTW = "foddr_forragem_totw";
 
     const titleEl = document.getElementById("setTitle");
     const subtitleEl = document.getElementById("setSubtitle");
@@ -215,6 +217,20 @@
         }
       });
       return normalized;
+    };
+
+    const loadStoredCounts = (key) => {
+      try {
+        const raw = localStorage.getItem(key);
+        if (!raw) return null;
+        return normalizeCounts(JSON.parse(raw));
+      } catch (err) {
+        return null;
+      }
+    };
+
+    const persistCounts = (key, counts) => {
+      localStorage.setItem(key, JSON.stringify(counts));
     };
 
     const formatPlayerCount = (value) => (value === 1 ? "1 jogador" : `${value} jogadores`);
@@ -740,6 +756,11 @@
       const nextValue = Math.max(0, (counts[index] || 0) + delta);
       counts[index] = nextValue;
       updateGridValue(gridEl, rating, nextValue);
+      if (gridEl === setRatingGrid) {
+        persistCounts(STORAGE_KEY_FORRAGEM, counts);
+      } else if (gridEl === setTotwGrid) {
+        persistCounts(STORAGE_KEY_TOTW, counts);
+      }
     };
 
     const applyDefaultsToGrid = (gridEl, counts, defaultsMap) => {
@@ -750,6 +771,14 @@
         if (Number.isNaN(rating) || index < 0 || index >= counts.length) return;
         counts[index] = Number(value) || 0;
         updateGridValue(gridEl, rating, counts[index]);
+      });
+    };
+
+    const applyCountsToGrid = (gridEl, counts) => {
+      if (!gridEl) return;
+      counts.forEach((value, index) => {
+        const rating = RATING_START + index;
+        updateGridValue(gridEl, rating, value);
       });
     };
 
@@ -982,6 +1011,20 @@
       renderRatingGrid(setTotwGrid);
       applyDefaultsToGrid(setRatingGrid, forragemCounts, DEFAULT_FORRAGEM);
       applyDefaultsToGrid(setTotwGrid, forragemTotwCounts, DEFAULT_TOTW);
+      const storedForragem = loadStoredCounts(STORAGE_KEY_FORRAGEM);
+      if (storedForragem) {
+        storedForragem.forEach((value, index) => {
+          forragemCounts[index] = value;
+        });
+        applyCountsToGrid(setRatingGrid, forragemCounts);
+      }
+      const storedTotw = loadStoredCounts(STORAGE_KEY_TOTW);
+      if (storedTotw) {
+        storedTotw.forEach((value, index) => {
+          forragemTotwCounts[index] = value;
+        });
+        applyCountsToGrid(setTotwGrid, forragemTotwCounts);
+      }
       attachGridListeners();
       if (resolverBtn) {
         resolverBtn.addEventListener("click", resolverSet);
