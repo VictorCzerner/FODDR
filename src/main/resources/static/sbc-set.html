@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title data-i18n="title.sbc_set">FODDR | Detalhes do Set</title>
+  <title data-i18n="title.sbc_set">FODDR | Detalhes do SBC</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -29,7 +29,7 @@
         <div class="catalog-header set-detail__header">
           <div>
             <p class="catalog-eyebrow" data-i18n="sbc.eyebrow">Squad Building Challenges</p>
-            <h1 id="setTitle" data-i18n="set.heading">Detalhes do set</h1>
+            <h1 id="setTitle" data-i18n="set.heading">Detalhes do SBC</h1>
             <p id="setSubtitle" class="set-detail__subtitle" data-i18n="set.subtitle_loading">Carregando informações…</p>
           </div>
           <div class="set-detail__actions">
@@ -49,7 +49,6 @@
               <h2 data-i18n="set.resolve_title">Resolver este set</h2>
               <p data-i18n="set.resolve_desc">Informe sua forragem disponível e resolva automaticamente os desafios deste set.</p>
             </div>
-            <button type="button" id="resolverSetBtn" class="submit-button" data-i18n="set.resolve_button">Resolver set</button>
           </div>
 
           <div class="grid-wrapper">
@@ -73,16 +72,16 @@
             <div class="rating-grid rating-grid--totw" id="setTotwGrid"></div>
           </div>
 
+          <button type="button" id="resolverSetBtn" class="submit-button" data-i18n="set.resolve_button">Resolver SBC</button>
+
           <div class="resolver-status" id="resolverStatus">
-            <span data-i18n="set.status_default">Informe a forragem e clique em "Resolver set".</span>
+            <span data-i18n="set.status_default">Informe a forragem e clique em "Resolver SBC".</span>
           </div>
         </section>
 
         <section class="results-section set-results">
           <div class="results-header">
             <h2 data-i18n="common.results_title">Resultados</h2>
-            <p id="resolverResultado" class="results-status">
-              <span data-i18n="set.results_prompt">Informe a forragem acima e clique em "Resolver set" para ver as soluções.</span>
             </p>
           </div>
           <div class="results-shell">
@@ -707,7 +706,7 @@
       if (typeof formation !== "string") return String(formation);
       if (formation.includes("-")) return formation;
       const trimmed = formation.trim();
-      const match = trimmed.match(/^f(\d{3,4})$/i);
+      const match = trimmed.match(/^f(\d{3,4})[a-z]?$/i);
       if (!match) return trimmed;
       return match[1].split("").join("-");
     };
@@ -901,7 +900,6 @@
 
     const renderMeta = (set) => {
       metaEl.innerHTML = "";
-      metaEl.appendChild(createMetaBadge(t("set.meta_set_id"), set.setId ?? "—"));
       metaEl.appendChild(createMetaBadge(t("set.meta_category"), set.categoryName || t("set.meta_category_unknown")));
       metaEl.appendChild(createMetaBadge(t("set.meta_expires"), formatDate(set.expiresAt)));
     };

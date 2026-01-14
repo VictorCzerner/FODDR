@@ -110,6 +110,18 @@ body {
   gap: 32px;
 }
 
+.set-resolver {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.set-resolver__header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .sbc-panel h1 {
   margin: 0;
   text-align: center;
