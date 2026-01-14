@@ -702,6 +702,16 @@
       });
     };
 
+    const formatFormation = (formation) => {
+      if (!formation) return "—";
+      if (typeof formation !== "string") return String(formation);
+      if (formation.includes("-")) return formation;
+      const trimmed = formation.trim();
+      const match = trimmed.match(/^f(\d{3,4})$/i);
+      if (!match) return trimmed;
+      return match[1].split("").join("-");
+    };
+
     const showMessage = (message, variant = "muted") => {
       contentEl.innerHTML = "";
       const box = document.createElement("div");
@@ -903,11 +913,11 @@
         return [emptyReq];
       }
 
-      const formatNamedId = (name, id) => {
-        if (id == null) return "—";
+      const formatNamedCount = (name, count) => {
+        const safeCount = Number.isFinite(Number(count)) ? Number(count) : 1;
         return name
-          ? t("set.requirement_named_id", { name, id })
-          : t("set.requirement_id_only", { id });
+          ? t("set.requirement_named_count", { name, count: safeCount })
+          : t("set.requirement_count_only", { count: safeCount });
       };
 
       const createRequirementItem = (label, value) => {
@@ -939,7 +949,7 @@
         items.push(
           createRequirementItem(
             t("set.requirement_nation_label"),
-            formatNamedId(req.nationName, req.nationId)
+            formatNamedCount(req.nationName, req.eligibilityValue)
           )
         );
       });
@@ -949,7 +959,7 @@
         items.push(
           createRequirementItem(
             t("set.requirement_club_label"),
-            formatNamedId(req.clubName, req.clubId)
+            formatNamedCount(req.clubName, req.eligibilityValue)
           )
         );
       });
@@ -959,7 +969,7 @@
         items.push(
           createRequirementItem(
             t("set.requirement_league_label"),
-            formatNamedId(req.leagueName, req.leagueId)
+            formatNamedCount(req.leagueName, req.eligibilityValue)
           )
         );
       });
@@ -996,7 +1006,7 @@
 
       const formationRow = document.createElement("li");
       formationRow.className = "catalog-card__meta-item";
-      formationRow.innerHTML = `<span class="catalog-card__meta-label">${t("set.meta_formation")}</span><span class="catalog-card__meta-value">${challenge.formation || "—"}</span>`;
+      formationRow.innerHTML = `<span class="catalog-card__meta-label">${t("set.meta_formation")}</span><span class="catalog-card__meta-value">${formatFormation(challenge.formation)}</span>`;
 
       const expiresRow = document.createElement("li");
       expiresRow.className = "catalog-card__meta-item";

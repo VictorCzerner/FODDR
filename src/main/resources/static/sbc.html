@@ -49,6 +49,8 @@
   <script src="i18n.js"></script>
   <script>
     const API_CATEGORIES = "/api/sbc/categories";
+    const SBC_SET_IMAGE_BASE =
+      "https://www.ea.com/ea-sports-fc/ultimate-team/web-app/content/26E4D4D6-8DBB-4A9A-BD99-9C47D3AA341D/2026/fut/sbc/companion/sets/images/sbc_set_image_";
     const tabsContainer = document.getElementById("tabs");
     const contentContainer = document.getElementById("content");
     const reloadBtn = document.getElementById("reloadCategorias");
@@ -108,11 +110,24 @@
       return item;
     };
 
+    const buildSetImageUrl = (imageId) => {
+      if (!imageId) return null;
+      return `${SBC_SET_IMAGE_BASE}${encodeURIComponent(imageId)}.png`;
+    };
+
     const criarCard = (set = {}) => {
       const card = document.createElement("article");
       card.className = "catalog-card";
       card.setAttribute("role", "button");
       card.setAttribute("tabindex", "0");
+
+      const imageUrl = buildSetImageUrl(set.imageId);
+      if (imageUrl) {
+        card.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.72)), url("${imageUrl}")`;
+        card.style.backgroundSize = "cover";
+        card.style.backgroundPosition = "center";
+        card.style.backgroundRepeat = "no-repeat";
+      }
 
       const label = set.name || set.setId
         ? t("sbc.card_open_named", { name: set.name || set.setId })
