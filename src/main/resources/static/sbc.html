@@ -164,7 +164,7 @@
         });
 
         if (!response.ok) {
-          throw new Error(t("common.error_response", { status: response.status }));
+          throw new Error(`Erro ${response.status}`);
         }
 
         const data = await response.json();
@@ -196,7 +196,7 @@
         const tab = document.createElement("button");
         tab.type = "button";
         tab.className = `catalog-tab${index === 0 ? " is-active" : ""}`;
-        tab.textContent = categoria.category || t("sbc.category_label", { index: index + 1 });
+        tab.textContent = categoria.category || `Categoria ${index + 1}`;
         tab.setAttribute("role", "tab");
         tab.setAttribute("aria-selected", index === 0 ? "true" : "false");
         tab.id = `catalog-tab-${index}`;
@@ -216,7 +216,7 @@
         if (sets.length === 0) {
           const empty = document.createElement("div");
           empty.className = "catalog-empty catalog-empty--muted";
-          empty.textContent = t("sbc.no_sets_in_category");
+          empty.textContent = "Nenhum set disponível nesta categoria.";
           panel.appendChild(empty);
         } else {
           const grid = document.createElement("div");

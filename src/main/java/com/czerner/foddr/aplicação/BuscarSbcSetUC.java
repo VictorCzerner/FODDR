@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.czerner.foddr.aplicação.Responses.SbcSetResponse;
+import com.czerner.foddr.dominio.serviços.ReferenceDataService;
 import com.czerner.foddr.dominio.serviços.serviçosData.SbcSetService;
 
 
@@ -14,14 +15,16 @@ import com.czerner.foddr.dominio.serviços.serviçosData.SbcSetService;
 public class BuscarSbcSetUC {
 
     private final SbcSetService sbcSetService;
+    private final ReferenceDataService referenceDataService;
 
-    public BuscarSbcSetUC(SbcSetService sbcSetService) {
+    public BuscarSbcSetUC(SbcSetService sbcSetService, ReferenceDataService referenceDataService) {
         this.sbcSetService = sbcSetService;
+        this.referenceDataService = referenceDataService;
     }
 
     @Transactional(readOnly = true)
     public Optional<SbcSetResponse> executar(Integer setId) {
         return sbcSetService.buscarPorSetId(setId)
-                .map(SbcSetResponse::new);
+                .map((set) -> new SbcSetResponse(set, referenceDataService));
     }
 }

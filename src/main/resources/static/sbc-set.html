@@ -903,36 +903,74 @@
         return [emptyReq];
       }
 
-      return requirements.map((req) => {
+      const formatNamedId = (name, id) => {
+        if (id == null) return "—";
+        return name
+          ? t("set.requirement_named_id", { name, id })
+          : t("set.requirement_id_only", { id });
+      };
+
+      const createRequirementItem = (label, value) => {
         const item = document.createElement("li");
         item.className = "set-requirement";
 
         const header = document.createElement("div");
         header.className = "set-requirement__header";
-        header.textContent = req.type || t("set.requirement_label");
+        header.textContent = label;
 
         const details = document.createElement("div");
         details.className = "set-requirement__details";
-
-        const parts = [];
-        if (req.eligibilityValue != null) {
-          parts.push(t("set.requirement_value", { value: req.eligibilityValue }));
-        }
-        if (req.nationId != null) {
-          parts.push(t("set.requirement_nation", { id: req.nationId }));
-        }
-        if (req.leagueId != null) {
-          parts.push(t("set.requirement_league", { id: req.leagueId }));
-        }
-        if (req.clubId != null) {
-          parts.push(t("set.requirement_club", { id: req.clubId }));
-        }
-
-        details.textContent = parts.length ? parts.join(" · ") : t("set.requirement_no_details");
+        details.textContent = value;
 
         item.append(header, details);
         return item;
+      };
+
+      const items = [];
+      const ratingReqs = requirements.filter(
+        (req) => req.type === "TEAM_RATING_1_TO_100" && req.eligibilityValue != null
+      );
+      ratingReqs.forEach((req) => {
+        items.push(createRequirementItem(t("set.requirement_team_rating"), String(req.eligibilityValue)));
       });
+
+      const nationReqs = requirements.filter((req) => req.nationId != null);
+      nationReqs.forEach((req) => {
+        items.push(
+          createRequirementItem(
+            t("set.requirement_nation_label"),
+            formatNamedId(req.nationName, req.nationId)
+          )
+        );
+      });
+
+      const clubReqs = requirements.filter((req) => req.clubId != null);
+      clubReqs.forEach((req) => {
+        items.push(
+          createRequirementItem(
+            t("set.requirement_club_label"),
+            formatNamedId(req.clubName, req.clubId)
+          )
+        );
+      });
+
+      const leagueReqs = requirements.filter((req) => req.leagueId != null);
+      leagueReqs.forEach((req) => {
+        items.push(
+          createRequirementItem(
+            t("set.requirement_league_label"),
+            formatNamedId(req.leagueName, req.leagueId)
+          )
+        );
+      });
+
+      if (!items.length) {
+        const emptyReq = document.createElement("li");
+        emptyReq.textContent = t("set.requirements_none");
+        return [emptyReq];
+      }
+
+      return items;
     };
 
     const renderChallenge = (challenge) => {

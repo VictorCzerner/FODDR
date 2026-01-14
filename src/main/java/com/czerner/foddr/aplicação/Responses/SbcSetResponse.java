@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import com.czerner.foddr.dominio.entidades.entidadesData.SbcChallenge;
 import com.czerner.foddr.dominio.entidades.entidadesData.SbcRequirement;
 import com.czerner.foddr.dominio.entidades.entidadesData.SbcSet;
+import com.czerner.foddr.dominio.serviços.ReferenceDataService;
 
 public class SbcSetResponse {
 
@@ -20,21 +21,28 @@ public class SbcSetResponse {
     private final List<ChallengeResponse> challenges;
 
     public SbcSetResponse(SbcSet set) {
+        this(set, null);
+    }
+
+    public SbcSetResponse(SbcSet set, ReferenceDataService referenceDataService) {
         this.setId = set.getSetId();
         this.name = set.getName();
         this.expiresAt = toEpochSeconds(set.getExpiresAt());
         this.imageId = set.getImageId();
         this.categoryId = set.getCategory() != null ? set.getCategory().getId() : null;
         this.categoryName = set.getCategory() != null ? set.getCategory().getName() : null;
-        this.challenges = mapChallenges(set.getChallenges());
+        this.challenges = mapChallenges(set.getChallenges(), referenceDataService);
     }
 
-    private List<ChallengeResponse> mapChallenges(List<SbcChallenge> entidades) {
+    private List<ChallengeResponse> mapChallenges(
+            List<SbcChallenge> entidades,
+            ReferenceDataService referenceDataService
+    ) {
         if (entidades == null || entidades.isEmpty()) {
             return Collections.emptyList();
         }
         return entidades.stream()
-                .map(ChallengeResponse::new)
+                .map((challenge) -> new ChallengeResponse(challenge, referenceDataService))
                 .collect(Collectors.toList());
     }
 
@@ -75,21 +83,24 @@ public class SbcSetResponse {
         private final Boolean repeatable;
         private final List<RequirementResponse> requirements;
 
-        ChallengeResponse(SbcChallenge challenge) {
+        ChallengeResponse(SbcChallenge challenge, ReferenceDataService referenceDataService) {
             this.challengeId = challenge.getChallengeId();
             this.name = challenge.getName();
             this.formation = challenge.getFormation();
             this.expiresAt = toEpochSeconds(challenge.getExpiresAt());
             this.repeatable = challenge.getRepeatable();
-            this.requirements = mapRequirements(challenge.getRequirements());
+            this.requirements = mapRequirements(challenge.getRequirements(), referenceDataService);
         }
 
-        private List<RequirementResponse> mapRequirements(List<SbcRequirement> entidades) {
+        private List<RequirementResponse> mapRequirements(
+                List<SbcRequirement> entidades,
+                ReferenceDataService referenceDataService
+        ) {
             if (entidades == null || entidades.isEmpty()) {
                 return Collections.emptyList();
             }
             return entidades.stream()
-                    .map(RequirementResponse::new)
+                    .map((requirement) -> new RequirementResponse(requirement, referenceDataService))
                     .collect(Collectors.toList());
         }
 
@@ -127,8 +138,11 @@ public class SbcSetResponse {
         private final Integer nationId;
         private final Integer leagueId;
         private final Integer clubId;
+        private final String nationName;
+        private final String leagueName;
+        private final String clubName;
 
-        RequirementResponse(SbcRequirement requirement) {
+        RequirementResponse(SbcRequirement requirement, ReferenceDataService referenceDataService) {
             this.requirementId = requirement.getId();
             this.type = requirement.getType();
             this.eligibilitySlot = requirement.getEligibilitySlot();
@@ -136,6 +150,15 @@ public class SbcSetResponse {
             this.nationId = requirement.getNationId();
             this.leagueId = requirement.getLeagueId();
             this.clubId = requirement.getClubId();
+            this.nationName = referenceDataService != null
+                    ? referenceDataService.getNationName(this.nationId)
+                    : null;
+            this.leagueName = referenceDataService != null
+                    ? referenceDataService.getLeagueName(this.leagueId)
+                    : null;
+            this.clubName = referenceDataService != null
+                    ? referenceDataService.getClubName(this.clubId)
+                    : null;
         }
 
         public Long getRequirementId() {
@@ -164,6 +187,18 @@ public class SbcSetResponse {
 
         public Integer getClubId() {
             return clubId;
+        }
+
+        public String getNationName() {
+            return nationName;
+        }
+
+        public String getLeagueName() {
+            return leagueName;
+        }
+
+        public String getClubName() {
+            return clubName;
         }
     }
 
