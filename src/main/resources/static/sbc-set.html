@@ -900,7 +900,6 @@
 
     const renderMeta = (set) => {
       metaEl.innerHTML = "";
-      metaEl.appendChild(createMetaBadge(t("set.meta_category"), set.categoryName || t("set.meta_category_unknown")));
       metaEl.appendChild(createMetaBadge(t("set.meta_expires"), formatDate(set.expiresAt)));
     };
 
@@ -912,7 +911,8 @@
       }
 
       const formatNamedCount = (name, count) => {
-        const safeCount = Number.isFinite(Number(count)) ? Number(count) : 1;
+        const numericCount = Number(count);
+        const safeCount = Number.isFinite(numericCount) && numericCount > 0 ? numericCount : 1;
         return name
           ? t("set.requirement_named_count", { name, count: safeCount })
           : t("set.requirement_count_only", { count: safeCount });
