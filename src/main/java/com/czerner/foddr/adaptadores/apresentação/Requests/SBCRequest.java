@@ -11,6 +11,7 @@ public class SBCRequest {
     private SBCData sbc;
     private int[] forragem;
     private int[] forragemTotw;
+    private List<Integer> completedChallengeIds;
 
     public SBCData getSbc() {
         return sbc;
@@ -34,6 +35,14 @@ public class SBCRequest {
 
     public void setForragemTotw(int[] forragemTotw) {
         this.forragemTotw = forragemTotw;
+    }
+
+    public List<Integer> getCompletedChallengeIds() {
+        return completedChallengeIds;
+    }
+
+    public void setCompletedChallengeIds(List<Integer> completedChallengeIds) {
+        this.completedChallengeIds = completedChallengeIds;
     }
 
     public static class SBCData {

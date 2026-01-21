@@ -1,7 +1,7 @@
 package com.czerner.foddr.aplicação;
 
-import java.util.Arrays;
-import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
@@ -25,16 +25,24 @@ public class SbcMachineSetProntoUC {
         this.SbcSetService = SbcSetService;
     }
 
-    public SBCResponse executar(int setId, forragens jogadores, forragensTOTW forragensTOTW) throws Exception {
+    public SBCResponse executar(
+            int setId,
+            forragens jogadores,
+            forragensTOTW forragensTOTW,
+            List<Integer> completedChallengeIds
+    ) throws Exception {
 
         SbcSet sbcSet = SbcSetService.buscarPorSetId(setId)
         .orElseThrow(() -> new RuntimeException("SBC Set não encontrado: " + setId));
-        
+        if (completedChallengeIds != null && !completedChallengeIds.isEmpty()) {
+            sbcSet.setChallenges(
+                sbcSet.getChallenges().stream()
+                    .filter(challenge -> !completedChallengeIds.contains(challenge.getChallengeId()))
+                    .collect(Collectors.toList())
+            );
+        }
+
         SBC sbc = SbcService.CriaSbcPorSet(sbcSet);
-
-
-
-
         return SbcMachineUC.executar(sbc, jogadores, forragensTOTW);
     }
 

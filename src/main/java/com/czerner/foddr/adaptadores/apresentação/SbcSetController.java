@@ -59,7 +59,12 @@ public class SbcSetController {
         final forragens finalJogadores = jogadores;
 
         try {
-            SBCResponse response = sbcMachineSetProntoUC.executar(setId, finalJogadores, finalTotw);
+            SBCResponse response = sbcMachineSetProntoUC.executar(
+                    setId,
+                    finalJogadores,
+                    finalTotw,
+                    request.getCompletedChallengeIds()
+            );
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             throw new RuntimeException("Erro ao resolver o SBC Set: " + e.getMessage(), e);

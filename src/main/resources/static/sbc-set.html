@@ -152,6 +152,7 @@
     const RATING_START = 79;
     const RATING_END = 93;
     const TOTAL_RATINGS = RATING_END - RATING_START + 1;
+    const STORAGE_KEY_COMPLETED_PREFIX = "foddr_set_completed_";
     const DEFAULT_FORRAGEM = {
       79: 10,
       80: 10,
@@ -216,6 +217,7 @@
       currentIndex: 0,
       cards: []
     };
+    const completedChallenges = new Set();
 
     const normalizeCounts = (counts) => {
       const normalized = Array(TOTAL_RATINGS).fill(0);
@@ -240,6 +242,31 @@
 
     const persistCounts = (key, counts) => {
       localStorage.setItem(key, JSON.stringify(counts));
+    };
+
+    const getCompletedStorageKey = () => `${STORAGE_KEY_COMPLETED_PREFIX}${setId || "unknown"}`;
+
+    const loadCompletedChallenges = () => {
+      if (!setId) return;
+      try {
+        const raw = localStorage.getItem(getCompletedStorageKey());
+        if (!raw) return;
+        const values = JSON.parse(raw);
+        if (!Array.isArray(values)) return;
+        values.forEach((value) => {
+          const numeric = Number(value);
+          if (Number.isFinite(numeric)) {
+            completedChallenges.add(numeric);
+          }
+        });
+      } catch (err) {
+        completedChallenges.clear();
+      }
+    };
+
+    const persistCompletedChallenges = () => {
+      if (!setId) return;
+      localStorage.setItem(getCompletedStorageKey(), JSON.stringify(Array.from(completedChallenges)));
     };
 
     const formatPlayerCount = (value) =>
@@ -858,7 +885,8 @@
           },
           body: JSON.stringify({
             forragem: getPayloadCounts(forragemCounts),
-            forragemTotw: getPayloadCounts(forragemTotwCounts)
+            forragemTotw: getPayloadCounts(forragemTotwCounts),
+            completedChallengeIds: Array.from(completedChallenges)
           })
         });
 
@@ -998,7 +1026,44 @@
       repeatable.className = `challenge-card__tag ${challenge.repeatable ? "is-repeatable" : ""}`;
       repeatable.textContent = challenge.repeatable ? t("set.challenge_repeatable") : t("set.challenge_single");
 
-      header.append(title, repeatable);
+      const toggleLabel = document.createElement("label");
+      toggleLabel.className = "challenge-card__toggle";
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.className = "challenge-card__checkbox";
+      checkbox.value = String(challenge.challengeId ?? "");
+      checkbox.checked = completedChallenges.has(Number(challenge.challengeId));
+
+      const checkmark = document.createElement("span");
+      checkmark.className = "challenge-card__checkmark";
+      checkmark.setAttribute("aria-hidden", "true");
+      checkmark.textContent = "✓";
+
+      const labelText = document.createElement("span");
+      labelText.className = "challenge-card__label";
+      labelText.textContent = t("set.challenge_completed");
+
+      toggleLabel.append(checkbox, checkmark, labelText);
+
+      if (checkbox.checked) {
+        card.classList.add("is-complete");
+      }
+
+      checkbox.addEventListener("change", () => {
+        const challengeId = Number(challenge.challengeId);
+        if (Number.isFinite(challengeId)) {
+          if (checkbox.checked) {
+            completedChallenges.add(challengeId);
+          } else {
+            completedChallenges.delete(challengeId);
+          }
+          persistCompletedChallenges();
+        }
+        card.classList.toggle("is-complete", checkbox.checked);
+      });
+
+      header.append(title, repeatable, toggleLabel);
       card.appendChild(header);
 
       const meta = document.createElement("ul");
@@ -1073,6 +1138,7 @@
     };
 
     const inicializarResolver = () => {
+      loadCompletedChallenges();
       renderRatingGrid(setRatingGrid);
       renderRatingGrid(setTotwGrid);
       applyDefaultsToGrid(setRatingGrid, forragemCounts, DEFAULT_FORRAGEM);
