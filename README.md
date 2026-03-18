@@ -1,6 +1,6 @@
 # FODDR
 
-Aplicacao Spring Boot para apoiar montagens de elencos e desafios SBC (Squad Building Challenges) no contexto de jogos de futebol. O sistema calcula combinacoes possiveis de cartas por faixa de rating para atingir um OVR alvo e ajuda a aproveitar os jogadores (forragens) disponiveis.
+Aplicacao Spring Boot para apoiar montagens de elencos e desafios SBC (Squad Building Challenges) no contexto de jogos de futebol virtual. O sistema calcula combinacoes possiveis de cartas por faixa de rating para atingir um OVR alvo e ajuda a aproveitar os jogadores (forragens) disponiveis.
 
 Link: https://foddr.onrender.com/sbc.html
 
